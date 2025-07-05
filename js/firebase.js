@@ -22,3 +22,14 @@ const ADMIN_CREDENTIALS = {
     userId: "Ramesh1381",
     password: "123@Ramesh"
 };
+// firebase.js के अंत में डालें
+function checkAdminAuth() {
+    const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
+    
+    if (!isAuthenticated) {
+        alert("Please login first");
+        window.location.href = '/admin/index.html';
+        return false;
+    }
+    return true;
+}
