@@ -471,6 +471,43 @@
                 margin-left: var(--sidebar-width);
             }
         }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: var(--danger-color);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Text Center */
+        .text-center {
+            text-align: center;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -639,7 +676,7 @@
             authDomain: "mywebsite-600d3.firebaseapp.com",
             databaseURL: "https://mywebsite-600d3-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "mywebsite-600d3",
-            storageBucket: "mywebsite-600d3.firebasestorage.app",
+            storageBucket: "mywebsite-600d3.appspot.com",
             messagingSenderId: "584485288598",
             appId: "1:584485288598:web:01856eaa18ba5ada49e0b7",
             measurementId: "G-GQ9J9QH42J"
@@ -659,6 +696,7 @@
             password: "123@Ramesh"
         };
 
+        // Check if admin is authenticated
         function checkAdminAuth() {
             const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
             if (!isAuthenticated) {
@@ -668,6 +706,7 @@
             return true;
         }
 
+        // Show toast notification
         function showToast(message, type) {
             const toastContainer = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -677,91 +716,149 @@
                 <button class="toast-close">&times;</button>
             `;
             toastContainer.appendChild(toast);
-            setTimeout(() => toast.remove(), 5000);
-            toast.querySelector('.toast-close').addEventListener('click', () => toast.remove());
+            
+            // Remove toast after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+            
+            // Close button event
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            });
         }
 
+        // Format timestamp to readable date
         function formatDate(timestamp) {
-            return new Date(timestamp).toLocaleString();
+            const date = new Date(timestamp);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
         }
 
+        // Load all dashboard data
         function loadDashboardData() {
-            // Load total users
+            // Load total users count
             database.ref('users').once('value').then(snapshot => {
-                document.getElementById('totalUsers').textContent = snapshot.numChildren();
+                const userCount = snapshot.exists() ? snapshot.numChildren() : 0;
+                document.getElementById('totalUsers').textContent = userCount;
+            }).catch(error => {
+                console.error("Error loading users:", error);
+                showToast("Error loading user data", "error");
             });
 
-            // Load active investments
+            // Load active investments count
             database.ref('investments').orderByChild('status').equalTo('active').once('value').then(snapshot => {
-                document.getElementById('activeInvestments').textContent = snapshot.numChildren();
+                const activeInvestments = snapshot.exists() ? snapshot.numChildren() : 0;
+                document.getElementById('activeInvestments').textContent = activeInvestments;
+            }).catch(error => {
+                console.error("Error loading investments:", error);
+                showToast("Error loading investment data", "error");
             });
 
-            // Load total deposits
+            // Load total deposits amount
             database.ref('transactions').orderByChild('type').equalTo('deposit').once('value').then(snapshot => {
-                let total = 0;
-                snapshot.forEach(child => {
-                    total += parseFloat(child.val().amount) || 0;
-                });
-                document.getElementById('totalDeposits').textContent = `$${total.toFixed(2)}`;
+                let totalDeposits = 0;
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const amount = parseFloat(child.val().amount) || 0;
+                        totalDeposits += amount;
+                    });
+                }
+                document.getElementById('totalDeposits').textContent = `$${totalDeposits.toFixed(2)}`;
+            }).catch(error => {
+                console.error("Error loading deposits:", error);
+                showToast("Error loading deposit data", "error");
             });
 
-            // Load pending withdrawals
+            // Load pending withdrawals count
             database.ref('transactions').orderByChild('status').equalTo('pending').once('value').then(snapshot => {
-                let count = 0;
-                snapshot.forEach(child => {
-                    if (child.val().type === 'withdrawal') count++;
-                });
-                document.getElementById('pendingWithdrawals').textContent = count;
+                let pendingWithdrawals = 0;
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        if (child.val().type === 'withdrawal') {
+                            pendingWithdrawals++;
+                        }
+                    });
+                }
+                document.getElementById('pendingWithdrawals').textContent = pendingWithdrawals;
+            }).catch(error => {
+                console.error("Error loading withdrawals:", error);
+                showToast("Error loading withdrawal data", "error");
             });
 
-            // Load recent activity
+            // Load recent activity (last 10 transactions)
             database.ref('transactions').orderByChild('timestamp').limitToLast(10).once('value').then(snapshot => {
                 const tbody = document.getElementById('activityTableBody');
                 tbody.innerHTML = '';
                 
                 if (!snapshot.exists()) {
-                    tbody.innerHTML = '<tr><td colspan="5">No recent activity</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No recent activity</td></tr>';
                     return;
                 }
 
+                // Convert to array and reverse to show newest first
+                const transactions = [];
                 snapshot.forEach(child => {
-                    const tx = child.val();
+                    transactions.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+                transactions.reverse();
+
+                // Populate table
+                transactions.forEach(tx => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${formatDate(tx.timestamp)}</td>
                         <td>${tx.userId || 'System'}</td>
-                        <td>${tx.type}</td>
+                        <td>${tx.type || 'N/A'}</td>
                         <td>$${(tx.amount || 0).toFixed(2)}</td>
                         <td class="status-${tx.status || 'completed'}">${tx.status || 'completed'}</td>
                     `;
                     tbody.appendChild(row);
                 });
+            }).catch(error => {
+                console.error("Error loading activity:", error);
+                showToast("Error loading recent activity", "error");
+                document.getElementById('activityTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="text-center">Error loading activity</td></tr>';
             });
         }
 
+        // Setup all event listeners
         function setupDashboardEventListeners() {
-            // Add funds button
+            // Add funds button - open modal
             document.getElementById('addFundsBtn').addEventListener('click', () => {
                 document.getElementById('addFundsModal').classList.add('active');
             });
 
-            // Approve withdrawals button
+            // Approve withdrawals button - redirect to transactions page
             document.getElementById('approveWithdrawalsBtn').addEventListener('click', () => {
                 window.location.href = 'transactions.html?type=withdrawal&status=pending';
             });
 
-            // View transactions button
+            // View transactions button - redirect to transactions page
             document.getElementById('viewTransactionsBtn').addEventListener('click', () => {
                 window.location.href = 'transactions.html';
             });
 
             // Refresh activity button
-            document.getElementById('refreshActivity').addEventListener('click', loadDashboardData);
+            document.getElementById('refreshActivity').addEventListener('click', () => {
+                loadDashboardData();
+                showToast("Dashboard data refreshed", "success");
+            });
 
             // Modal close buttons
             document.querySelectorAll('.modal-close, #cancelAddFunds').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.getElementById('addFundsModal').classList.remove('active');
+                    // Clear form
+                    document.getElementById('userId').value = '';
+                    document.getElementById('fundAmount').value = '';
+                    document.getElementById('fundNote').value = '';
+                    document.getElementById('addFundsError').textContent = '';
                 });
             });
 
@@ -770,62 +867,101 @@
                 const userId = document.getElementById('userId').value.trim();
                 const amount = parseFloat(document.getElementById('fundAmount').value);
                 const note = document.getElementById('fundNote').value.trim();
+                const errorElement = document.getElementById('addFundsError');
 
-                if (!userId || isNaN(amount) {
-                    showToast('Please enter valid user ID and amount', 'error');
+                // Validate inputs
+                if (!userId) {
+                    errorElement.textContent = 'Please enter a user ID';
+                    return;
+                }
+                if (isNaN(amount) {
+                    errorElement.textContent = 'Please enter a valid amount';
+                    return;
+                }
+                if (amount <= 0) {
+                    errorElement.textContent = 'Amount must be greater than 0';
                     return;
                 }
 
+                errorElement.textContent = '';
+                
+                // Check if user exists
                 database.ref('users/' + userId).once('value').then(snapshot => {
                     if (!snapshot.exists()) {
-                        showToast('User not found', 'error');
+                        errorElement.textContent = 'User not found';
                         return;
                     }
 
-                    const updates = {};
-                    const currentBalance = parseFloat(snapshot.val().balance) || 0;
+                    // Prepare transaction data
                     const txId = database.ref().child('transactions').push().key;
+                    const timestamp = Date.now();
+                    const updates = {};
 
-                    updates[`users/${userId}/balance`] = currentBalance + amount;
+                    // Get current balance or set to 0 if not exists
+                    const currentBalance = parseFloat(snapshot.val().balance) || 0;
+                    const newBalance = currentBalance + amount;
+
+                    // Update user balance
+                    updates[`users/${userId}/balance`] = newBalance;
+                    
+                    // Add transaction record
                     updates[`transactions/${txId}`] = {
                         userId: userId,
                         type: 'admin_deposit',
                         amount: amount,
                         status: 'completed',
-                        timestamp: Date.now(),
-                        details: note || 'Admin added funds'
+                        timestamp: timestamp,
+                        details: note || 'Admin added funds',
+                        adminId: ADMIN_CREDENTIALS.userId
                     };
 
+                    // Update database
                     database.ref().update(updates).then(() => {
-                        showToast(`Added $${amount.toFixed(2)} to user ${userId}`, 'success');
+                        showToast(`Successfully added $${amount.toFixed(2)} to user ${userId}`, "success");
                         document.getElementById('addFundsModal').classList.remove('active');
+                        // Clear form
                         document.getElementById('userId').value = '';
                         document.getElementById('fundAmount').value = '';
                         document.getElementById('fundNote').value = '';
+                        // Refresh dashboard data
                         loadDashboardData();
+                    }).catch(error => {
+                        console.error("Error adding funds:", error);
+                        errorElement.textContent = 'Error adding funds. Please try again.';
+                        showToast("Error adding funds", "error");
                     });
+                }).catch(error => {
+                    console.error("Error checking user:", error);
+                    errorElement.textContent = 'Error checking user. Please try again.';
+                    showToast("Error checking user", "error");
                 });
             });
-        }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAdminAuth()) return;
-
-            // Set admin name
-            document.getElementById('adminName').textContent = ADMIN_CREDENTIALS.userId;
-            
-            // Load data
-            loadDashboardData();
-            setupDashboardEventListeners();
-            
             // Logout functionality
             document.querySelectorAll('#logoutBtn, #logoutLink').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
+                    // Clear authentication
                     localStorage.removeItem('adminAuthenticated');
+                    // Redirect to login page
                     window.location.href = 'index.html';
                 });
             });
+        }
+
+        // When DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if admin is authenticated
+            if (!checkAdminAuth()) return;
+
+            // Set admin name in header
+            document.getElementById('adminName').textContent = ADMIN_CREDENTIALS.userId;
+            
+            // Load all dashboard data
+            loadDashboardData();
+            
+            // Setup all event listeners
+            setupDashboardEventListeners();
         });
     </script>
 </body>
