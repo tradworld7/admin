@@ -11,9 +11,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
-// Firebase services
 const auth = firebase.auth();
 const database = firebase.database();
 
@@ -22,13 +23,11 @@ const ADMIN_CREDENTIALS = {
     userId: "Ramesh1381",
     password: "123@Ramesh"
 };
-// firebase.js के अंत में डालें
+
 function checkAdminAuth() {
     const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
-    
     if (!isAuthenticated) {
-        alert("Please login first");
-        window.location.href = '/admin/index.html';
+        window.location.href = 'index.html';
         return false;
     }
     return true;
