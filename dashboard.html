@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade World - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-chart-line logo-icon"></i>
+            <span class="logo-text">Trade World Admin</span>
+        </div>
+        <div class="admin-controls">
+            <span class="admin-name" id="adminName"></span>
+            <button id="logoutBtn" class="btn btn-outline">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <aside class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <h1 class="page-title">Admin Dashboard</h1>
+        
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Total Users</span>
+                    <div class="card-icon users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="totalUsers">0</div>
+                <div class="card-footer">
+                    Registered users
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Active Investments</span>
+                    <div class="card-icon investments">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="activeInvestments">0</div>
+                <div class="card-footer">Currently active investments</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Total Deposits</span>
+                    <div class="card-icon deposits">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="totalDeposits">$0.00</div>
+                <div class="card-footer">All-time deposits</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Pending Withdrawals</span>
+                    <div class="card-icon withdrawals">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="pendingWithdrawals">0</div>
+                <div class="card-footer">Awaiting approval</div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions Section -->
+        <div class="quick-actions">
+            <h2 class="section-title">Quick Actions</h2>
+            <div class="action-buttons">
+                <button id="addFundsBtn" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i> Add Funds to User
+                </button>
+                <button id="approveWithdrawalsBtn" class="btn btn-success">
+                    <i class="fas fa-check-circle"></i> Approve Withdrawals
+                </button>
+                <button id="viewTransactionsBtn" class="btn btn-info">
+                    <i class="fas fa-exchange-alt"></i> View Transactions
+                </button>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Section -->
+        <div class="recent-activity">
+            <div class="section-header">
+                <h2 class="section-title">Recent Activity</h2>
+                <button id="refreshActivity" class="btn btn-outline">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table activity-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center">Loading activity...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Funds Modal -->
+    <div class="modal" id="addFundsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Funds to User</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="userId">User ID</label>
+                    <input type="text" id="userId" class="form-control" placeholder="Enter user ID">
+                </div>
+                <div class="form-group">
+                    <label for="fundAmount">Amount ($)</label>
+                    <input type="number" id="fundAmount" class="form-control" placeholder="0.00" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="fundNote">Note (Optional)</label>
+                    <input type="text" id="fundNote" class="form-control" placeholder="Reason for adding funds">
+                </div>
+                <div id="addFundsError" class="error-message"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelAddFunds" class="btn btn-outline">Cancel</button>
+                <button id="confirmAddFunds" class="btn btn-primary">Add Funds</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- App Scripts -->
+    <script src="js/firebase.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

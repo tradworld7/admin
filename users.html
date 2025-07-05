@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade World - User Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-chart-line logo-icon"></i>
+            <span class="logo-text">Trade World Admin</span>
+        </div>
+        <div class="admin-controls">
+            <span class="admin-name" id="adminName"></span>
+            <button id="logoutBtn" class="btn btn-outline">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <aside class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="users.html" class="active"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="section-header">
+            <h1 class="page-title">User Management</h1>
+            <div class="user-search">
+                <input type="text" id="userSearch" placeholder="Search by user ID or email...">
+                <button id="searchBtn" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+        
+        <!-- User Actions -->
+        <div class="user-actions">
+            <button id="addUserBtn" class="btn btn-success">
+                <i class="fas fa-user-plus"></i> Add User
+            </button>
+            <button id="exportUsersBtn" class="btn btn-info">
+                <i class="fas fa-file-export"></i> Export Users
+            </button>
+        </div>
+        
+        <!-- Users Table -->
+        <div class="table-responsive">
+            <table class="table users-table">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="6" class="text-center">Loading users...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination">
+            <button id="prevPage" class="btn btn-outline" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span id="pageInfo">Page 1 of 1</span>
+            <button id="nextPage" class="btn btn-outline" disabled>
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- User Details Modal -->
+    <div class="modal" id="userDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>User Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-details-grid">
+                    <div class="detail-group">
+                        <label>User ID:</label>
+                        <span id="detailUserId"></span>
+                    </div>
+                    <div class="detail-group">
+                        <label>Name:</label>
+                        <span id="detailName"></span>
+                    </div>
+                    <div class="detail-group">
+                        <label>Email:</label>
+                        <span id="detailEmail"></span>
+                    </div>
+                    <div class="detail-group">
+                        <label>Balance:</label>
+                        <span id="detailBalance"></span>
+                    </div>
+                    <div class="detail-group">
+                        <label>Registration:</label>
+                        <span id="detailRegistration"></span>
+                    </div>
+                    <div class="detail-group">
+                        <label>Status:</label>
+                        <span id="detailStatus"></span>
+                    </div>
+                    <div class="detail-group">
+                        <label>Referral Code:</label>
+                        <span id="detailReferral"></span>
+                    </div>
+                    <div class="detail-group">
+                        <label>Referrer:</label>
+                        <span id="detailReferrer"></span>
+                    </div>
+                </div>
+                
+                <div class="user-actions-modal">
+                    <button id="editUserBtn" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit User
+                    </button>
+                    <button id="addFundsUserBtn" class="btn btn-success">
+                        <i class="fas fa-plus-circle"></i> Add Funds
+                    </button>
+                    <button id="viewTransactionsBtn" class="btn btn-info">
+                        <i class="fas fa-exchange-alt"></i> View Transactions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- App Scripts -->
+    <script src="js/firebase.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
