@@ -114,6 +114,20 @@
             text-align: center;
             font-size: 0.9rem;
         }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -136,8 +150,8 @@
                         <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-sign-in-alt"></i> Login
+                    <button type="submit" class="btn btn-primary" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i> <span id="btnText">Login</span>
                     </button>
                     
                     <div id="authError" class="error-message"></div>
@@ -156,7 +170,7 @@
             authDomain: "mywebsite-600d3.firebaseapp.com",
             databaseURL: "https://mywebsite-600d3-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "mywebsite-600d3",
-            storageBucket: "mywebsite-600d3.firebasestorage.app",
+            storageBucket: "mywebsite-600d3.appspot.com",
             messagingSenderId: "584485288598",
             appId: "1:584485288598:web:01856eaa18ba5ada49e0b7",
             measurementId: "G-GQ9J9QH42J"
@@ -170,15 +184,18 @@
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // Admin credentials
-        const ADMIN_CREDENTIALS = {
-            userId: "Ramesh1381",
-            password: "123@Ramesh"
-        };
-
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
             const authError = document.getElementById('authError');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('btnText');
+            
+            // Check if user is already logged in
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    window.location.href = 'dashboard.html';
+                }
+            });
             
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -187,12 +204,42 @@
                 const password = document.getElementById('password').value;
                 
                 authError.textContent = '';
+                loginBtn.disabled = true;
+                btnText.textContent = '';
+                loginBtn.innerHTML = '<div class="loading"></div>';
                 
-                if (adminId === ADMIN_CREDENTIALS.userId && password === ADMIN_CREDENTIALS.password) {
-                    localStorage.setItem('adminAuthenticated', 'true');
-                    window.location.href = 'dashboard.html';
-                } else {
-                    authError.textContent = 'Invalid admin ID or password';
+                // Sign in with email and password
+                auth.signInWithEmailAndPassword(adminId, password)
+                    .then((userCredential) => {
+                        // Check if user is admin
+                        const user = userCredential.user;
+                        const userId = user.uid;
+                        
+                        // Check in database if user has admin privileges
+                        database.ref('admins/' + userId).once('value')
+                            .then((snapshot) => {
+                                if (snapshot.exists()) {
+                                    window.location.href = 'dashboard.html';
+                                } else {
+                                    auth.signOut();
+                                    authError.textContent = 'You do not have admin privileges';
+                                    resetLoginButton();
+                                }
+                            })
+                            .catch((error) => {
+                                authError.textContent = 'Error verifying admin privileges';
+                                resetLoginButton();
+                            });
+                    })
+                    .catch((error) => {
+                        authError.textContent = 'Invalid admin ID or password';
+                        resetLoginButton();
+                    });
+                
+                function resetLoginButton() {
+                    loginBtn.disabled = false;
+                    btnText.textContent = 'Login';
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span id="btnText">Login</span>';
                 }
             });
         });
