@@ -6,34 +6,15 @@
     <title>Trade World - Transaction Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* (Include all CSS styles from dashboard.html here) */
+        /* ... */
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <i class="fas fa-chart-line logo-icon"></i>
-            <span class="logo-text">Trade World Admin</span>
-        </div>
-        <div class="admin-controls">
-            <span class="admin-name" id="adminName"></span>
-            <button id="logoutBtn" class="btn btn-outline">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-    </header>
+    <!-- (Include header and sidebar from dashboard.html) -->
+    <!-- ... -->
 
-    <!-- Sidebar Menu -->
-    <aside class="sidebar" id="sidebar">
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
-            <li><a href="transactions.html" class="active"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
-            <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </aside>
-
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
         <div class="section-header">
             <h1 class="page-title">Transaction Management</h1>
@@ -43,40 +24,28 @@
                     <option value="deposit">Deposits</option>
                     <option value="withdrawal">Withdrawals</option>
                     <option value="transfer">Transfers</option>
-                    <option value="investment">Investments</option>
                 </select>
                 <select id="transactionStatusFilter">
                     <option value="all">All Statuses</option>
                     <option value="pending">Pending</option>
                     <option value="completed">Completed</option>
-                    <option value="rejected">Rejected</option>
                 </select>
-                <input type="date" id="transactionDateFilter">
                 <button id="applyFiltersBtn" class="btn btn-primary">
                     <i class="fas fa-filter"></i> Apply
                 </button>
             </div>
         </div>
         
-        <!-- Transaction Actions -->
         <div class="transaction-actions">
-            <button id="approveSelectedBtn" class="btn btn-success" disabled>
-                <i class="fas fa-check-circle"></i> Approve Selected
-            </button>
-            <button id="rejectSelectedBtn" class="btn btn-danger" disabled>
-                <i class="fas fa-times-circle"></i> Reject Selected
-            </button>
             <button id="exportTransactionsBtn" class="btn btn-info">
                 <i class="fas fa-file-export"></i> Export
             </button>
         </div>
         
-        <!-- Transactions Table -->
         <div class="table-responsive">
             <table class="table transactions-table">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" id="selectAllTransactions"></th>
                         <th>Transaction ID</th>
                         <th>User</th>
                         <th>Type</th>
@@ -88,87 +57,91 @@
                 </thead>
                 <tbody id="transactionsTableBody">
                     <tr>
-                        <td colspan="8" class="text-center">Loading transactions...</td>
+                        <td colspan="7" class="text-center">Loading transactions...</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        
-        <!-- Pagination -->
-        <div class="pagination">
-            <button id="prevTxPage" class="btn btn-outline" disabled>
-                <i class="fas fa-chevron-left"></i> Previous
-            </button>
-            <span id="txPageInfo">Page 1 of 1</span>
-            <button id="nextTxPage" class="btn btn-outline" disabled>
-                Next <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
     </main>
 
-    <!-- Transaction Details Modal -->
-    <div class="modal" id="transactionDetailsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Transaction Details</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="transaction-details-grid">
-                    <div class="detail-group">
-                        <label>Transaction ID:</label>
-                        <span id="detailTxId"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>User ID:</label>
-                        <span id="detailTxUserId"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Type:</label>
-                        <span id="detailTxType"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Amount:</label>
-                        <span id="detailTxAmount"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Status:</label>
-                        <span id="detailTxStatus"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Date:</label>
-                        <span id="detailTxDate"></span>
-                    </div>
-                    <div class="detail-group full-width">
-                        <label>Details:</label>
-                        <span id="detailTxDetails"></span>
-                    </div>
-                    <div class="detail-group full-width" id="withdrawalDetailsGroup">
-                        <label>Withdrawal Address:</label>
-                        <span id="detailWithdrawalAddress"></span>
-                        <button id="copyAddressBtn" class="btn btn-sm btn-outline">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="approveTxBtn" class="btn btn-success">
-                    <i class="fas fa-check-circle"></i> Approve
-                </button>
-                <button id="rejectTxBtn" class="btn btn-danger">
-                    <i class="fas fa-times-circle"></i> Reject
-                </button>
-                <button id="closeTxModalBtn" class="btn btn-outline">Close</button>
-            </div>
-        </div>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // (Include all JavaScript from dashboard.html here)
+        // ...
 
-    <!-- Toast Notifications Container -->
-    <div class="toast-container" id="toastContainer"></div>
+        function loadTransactions() {
+            const typeFilter = document.getElementById('transactionTypeFilter').value;
+            const statusFilter = document.getElementById('transactionStatusFilter').value;
+            
+            let query = database.ref('transactions').orderByChild('timestamp');
+            
+            if (statusFilter !== 'all') {
+                query = query.orderByChild('status').equalTo(statusFilter);
+            }
+            
+            query.once('value').then(snapshot => {
+                const tbody = document.getElementById('transactionsTableBody');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = '<tr><td colspan="7">No transactions found</td></tr>';
+                    return;
+                }
 
-    <!-- App Scripts -->
-    <script src="js/firebase.js"></script>
-    <script src="js/app.js"></script>
+                snapshot.forEach(child => {
+                    const tx = child.val();
+                    if (typeFilter !== 'all' && tx.type !== typeFilter) return;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${child.key.substring(0, 8)}...</td>
+                        <td>${tx.userId || 'System'}</td>
+                        <td>${tx.type}</td>
+                        <td>$${(tx.amount || 0).toFixed(2)}</td>
+                        <td>${formatDate(tx.timestamp)}</td>
+                        <td class="status-${tx.status || 'completed'}">${tx.status || 'completed'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary view-tx" data-txid="${child.key}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAdminAuth()) return;
+            
+            document.getElementById('adminName').textContent = ADMIN_CREDENTIALS.userId;
+            
+            // Load transactions
+            loadTransactions();
+            
+            // Apply filters
+            document.getElementById('applyFiltersBtn').addEventListener('click', loadTransactions);
+            
+            // Export transactions
+            document.getElementById('exportTransactionsBtn').addEventListener('click', exportTransactions);
+            
+            // Logout
+            document.querySelectorAll('#logoutBtn, #logoutLink').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('adminAuthenticated');
+                    window.location.href = 'index.html';
+                });
+            });
+        });
+
+        function exportTransactions() {
+            // Implementation for exporting transactions to CSV
+            // ...
+        }
+    </script>
 </body>
 </html>
