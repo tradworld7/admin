@@ -7,19 +7,488 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* (Include all CSS styles from dashboard.html here) */
-        /* ... */
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --info-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --white-color: #ffffff;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--white-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .admin-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-name {
+            font-weight: 500;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .btn-sm {
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: var(--white-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: var(--white-color);
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+            color: var(--white-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: var(--white-color);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 70px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            gap: 0.8rem;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu li a.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .sidebar-menu li a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-top: 70px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            background-color: var(--white-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .table th {
+            background-color: rgba(0, 0, 0, 0.02);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 500;
+            color: var(--gray-color);
+        }
+
+        .table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Status Badges */
+        .status-active {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+        .status-inactive {
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+        .status-pending {
+            color: var(--warning-color);
+            font-weight: 500;
+        }
+
+        /* Search Styles */
+        .user-search {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-search input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            min-width: 300px;
+        }
+
+        /* User Actions */
+        .user-actions {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Text Center */
+        .text-center {
+            text-align: center;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1200;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            color: var(--white-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease forwards;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--white-color);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--white-color);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        /* User Details Grid */
+        .user-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .detail-group {
+            margin-bottom: 1rem;
+        }
+
+        .detail-group label {
+            font-weight: 500;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .detail-group span {
+            font-size: 1rem;
+            word-break: break-all;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .user-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-search {
+                width: 100%;
+            }
+
+            .user-search input {
+                min-width: auto;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- (Include header and sidebar from dashboard.html) -->
-    <!-- ... -->
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-chart-line logo-icon"></i>
+            <span class="logo-text">Trade World Admin</span>
+        </div>
+        <div class="admin-controls">
+            <span class="admin-name" id="adminName"></span>
+            <button id="logoutBtn" class="btn btn-outline">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
 
+    <!-- Sidebar Menu -->
+    <aside class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="users.html" class="active"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
     <main class="main-content" id="mainContent">
         <div class="section-header">
             <h1 class="page-title">User Management</h1>
             <div class="user-search">
-                <input type="text" id="userSearch" placeholder="Search by user ID or email...">
+                <input type="text" id="userSearch" placeholder="Search by user ID, name or email..." class="form-control">
                 <button id="searchBtn" class="btn btn-primary">
                     <i class="fas fa-search"></i> Search
                 </button>
@@ -27,6 +496,9 @@
         </div>
         
         <div class="user-actions">
+            <button id="addUserBtn" class="btn btn-success">
+                <i class="fas fa-user-plus"></i> Add User
+            </button>
             <button id="exportUsersBtn" class="btn btn-info">
                 <i class="fas fa-file-export"></i> Export Users
             </button>
@@ -75,6 +547,10 @@
                         <span id="detailEmail"></span>
                     </div>
                     <div class="detail-group">
+                        <label>Phone:</label>
+                        <span id="detailPhone"></span>
+                    </div>
+                    <div class="detail-group">
                         <label>Balance:</label>
                         <span id="detailBalance"></span>
                     </div>
@@ -83,44 +559,192 @@
                         <span id="detailRegistration"></span>
                     </div>
                     <div class="detail-group">
+                        <label>Last Login:</label>
+                        <span id="detailLastLogin"></span>
+                    </div>
+                    <div class="detail-group">
                         <label>Status:</label>
                         <span id="detailStatus"></span>
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button id="editUserBtn" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button id="deactivateUserBtn" class="btn btn-danger" style="display: none;">
+                    <i class="fas fa-user-slash"></i> Deactivate
+                </button>
+                <button id="activateUserBtn" class="btn btn-success" style="display: none;">
+                    <i class="fas fa-user-check"></i> Activate
+                </button>
+                <button id="closeDetailsBtn" class="btn btn-outline">Close</button>
+            </div>
         </div>
     </div>
 
+    <!-- Add User Modal -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New User</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newUserName">Full Name</label>
+                    <input type="text" id="newUserName" class="form-control" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="newUserEmail">Email</label>
+                    <input type="email" id="newUserEmail" class="form-control" placeholder="Enter email address">
+                </div>
+                <div class="form-group">
+                    <label for="newUserPassword">Password</label>
+                    <input type="password" id="newUserPassword" class="form-control" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label for="newUserPhone">Phone Number</label>
+                    <input type="tel" id="newUserPhone" class="form-control" placeholder="Enter phone number">
+                </div>
+                <div class="form-group">
+                    <label for="newUserBalance">Initial Balance ($)</label>
+                    <input type="number" id="newUserBalance" class="form-control" placeholder="0.00" step="0.01" min="0" value="0">
+                </div>
+                <div id="addUserError" class="error-message"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelAddUser" class="btn btn-outline">Cancel</button>
+                <button id="confirmAddUser" class="btn btn-primary">Add User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Firebase and App Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // (Include all JavaScript from dashboard.html here)
-        // ...
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBshAGZScyo7PJegLHMzORbkkrCLGD6U5s",
+            authDomain: "mywebsite-600d3.firebaseapp.com",
+            databaseURL: "https://mywebsite-600d3-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mywebsite-600d3",
+            storageBucket: "mywebsite-600d3.appspot.com",
+            messagingSenderId: "584485288598",
+            appId: "1:584485288598:web:01856eaa18ba5ada49e0b7",
+            measurementId: "G-GQ9J9QH42J"
+        };
 
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Admin credentials
+        const ADMIN_CREDENTIALS = {
+            userId: "Ramesh1381",
+            password: "123@Ramesh"
+        };
+
+        // Check if admin is authenticated
+        function checkAdminAuth() {
+            const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
+            if (!isAuthenticated) {
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Show toast notification
+        function showToast(message, type) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button class="toast-close">&times;</button>
+            `;
+            toastContainer.appendChild(toast);
+            
+            // Remove toast after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+            
+            // Close button event
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            });
+        }
+
+        // Format timestamp to readable date
+        function formatDate(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return '$' + parseFloat(amount || 0).toFixed(2);
+        }
+
+        // Load users data
         function loadUsersData() {
             database.ref('users').once('value').then(snapshot => {
                 const tbody = document.getElementById('usersTableBody');
                 tbody.innerHTML = '';
                 
                 if (!snapshot.exists()) {
-                    tbody.innerHTML = '<tr><td colspan="6">No users found</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No users found</td></tr>';
                     return;
                 }
 
+                // Convert to array for sorting
+                const users = [];
                 snapshot.forEach(child => {
-                    const user = child.val();
+                    users.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+
+                // Sort by registration date (newest first)
+                users.sort((a, b) => (b.registrationDate || 0) - (a.registrationDate || 0));
+
+                // Populate table
+                users.forEach(user => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${child.key}</td>
+                        <td>${user.id.substring(0, 8)}...</td>
                         <td>${user.name || 'N/A'}</td>
                         <td>${user.email || 'N/A'}</td>
-                        <td>$${(user.balance || 0).toFixed(2)}</td>
+                        <td>${formatCurrency(user.balance)}</td>
                         <td class="status-${user.status || 'active'}">${user.status || 'active'}</td>
                         <td>
-                            <button class="btn btn-sm btn-primary view-user" data-userid="${child.key}">
+                            <button class="btn btn-sm btn-primary view-user" data-userid="${user.id}">
                                 <i class="fas fa-eye"></i> View
                             </button>
+                            ${user.status === 'active' ? `
+                            <button class="btn btn-sm btn-danger deactivate-user" data-userid="${user.id}">
+                                <i class="fas fa-user-slash"></i> Deactivate
+                            </button>
+                            ` : `
+                            <button class="btn btn-sm btn-success activate-user" data-userid="${user.id}">
+                                <i class="fas fa-user-check"></i> Activate
+                            </button>
+                            `}
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -129,26 +753,232 @@
                 // Add event listeners to view buttons
                 document.querySelectorAll('.view-user').forEach(btn => {
                     btn.addEventListener('click', () => {
-                        const userId = btn.dataset.userid;
-                        database.ref('users/' + userId).once('value').then(snapshot => {
-                            const user = snapshot.val();
-                            document.getElementById('detailUserId').textContent = userId;
-                            document.getElementById('detailName').textContent = user.name || 'N/A';
-                            document.getElementById('detailEmail').textContent = user.email || 'N/A';
-                            document.getElementById('detailBalance').textContent = `$${(user.balance || 0).toFixed(2)}`;
-                            document.getElementById('detailRegistration').textContent = user.registrationDate ? formatDate(user.registrationDate) : 'N/A';
-                            document.getElementById('detailStatus').textContent = user.status || 'active';
-                            document.getElementById('userDetailsModal').classList.add('active');
-                        });
+                        const userId = btn.getAttribute('data-userid');
+                        showUserDetails(userId);
                     });
                 });
+
+                // Add event listeners to deactivate buttons
+                document.querySelectorAll('.deactivate-user').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const userId = btn.getAttribute('data-userid');
+                        updateUserStatus(userId, 'inactive');
+                    });
+                });
+
+                // Add event listeners to activate buttons
+                document.querySelectorAll('.activate-user').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const userId = btn.getAttribute('data-userid');
+                        updateUserStatus(userId, 'active');
+                    });
+                });
+
+            }).catch(error => {
+                console.error("Error loading users:", error);
+                showToast("Error loading users", "error");
+                document.getElementById('usersTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="text-center">Error loading users</td></tr>';
             });
+        }
+
+        // Show user details in modal
+        function showUserDetails(userId) {
+            database.ref('users/' + userId).once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    showToast("User not found", "error");
+                    return;
+                }
+
+                const user = snapshot.val();
+                
+                // Populate details
+                document.getElementById('detailUserId').textContent = userId;
+                document.getElementById('detailName').textContent = user.name || 'N/A';
+                document.getElementById('detailEmail').textContent = user.email || 'N/A';
+                document.getElementById('detailPhone').textContent = user.phone || 'N/A';
+                document.getElementById('detailBalance').textContent = formatCurrency(user.balance);
+                document.getElementById('detailRegistration').textContent = formatDate(user.registrationDate);
+                document.getElementById('detailLastLogin').textContent = formatDate(user.lastLogin);
+                document.getElementById('detailStatus').textContent = user.status || 'active';
+                document.getElementById('detailStatus').className = `status-${user.status || 'active'}`;
+
+                // Show/hide action buttons based on user status
+                const deactivateBtn = document.getElementById('deactivateUserBtn');
+                const activateBtn = document.getElementById('activateUserBtn');
+                
+                if (user.status === 'active') {
+                    deactivateBtn.style.display = 'inline-block';
+                    activateBtn.style.display = 'none';
+                } else {
+                    deactivateBtn.style.display = 'none';
+                    activateBtn.style.display = 'inline-block';
+                }
+
+                // Set user ID on buttons
+                deactivateBtn.setAttribute('data-userid', userId);
+                activateBtn.setAttribute('data-userid', userId);
+                document.getElementById('editUserBtn').setAttribute('data-userid', userId);
+
+                // Open modal
+                document.getElementById('userDetailsModal').classList.add('active');
+
+            }).catch(error => {
+                console.error("Error loading user details:", error);
+                showToast("Error loading user details", "error");
+            });
+        }
+
+        // Update user status (active/inactive)
+        function updateUserStatus(userId, status) {
+            const action = status === 'active' ? 'activate' : 'deactivate';
+            if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+            
+            const updates = {};
+            updates[`users/${userId}/status`] = status;
+            
+            database.ref().update(updates).then(() => {
+                showToast(`User ${action}d successfully`, "success");
+                loadUsersData();
+                
+                // If details modal is open for this user, update it
+                if (document.getElementById('userDetailsModal').classList.contains('active') && 
+                    document.getElementById('detailUserId').textContent === userId) {
+                    document.getElementById('detailStatus').textContent = status;
+                    document.getElementById('detailStatus').className = `status-${status}`;
+                    
+                    // Toggle action buttons
+                    const deactivateBtn = document.getElementById('deactivateUserBtn');
+                    const activateBtn = document.getElementById('activateUserBtn');
+                    
+                    if (status === 'active') {
+                        deactivateBtn.style.display = 'inline-block';
+                        activateBtn.style.display = 'none';
+                    } else {
+                        deactivateBtn.style.display = 'none';
+                        activateBtn.style.display = 'inline-block';
+                    }
+                }
+            }).catch(error => {
+                console.error(`Error ${action}ing user:`, error);
+                showToast(`Error ${action}ing user`, "error");
+            });
+        }
+
+        // Export users to CSV
+        function exportUsers() {
+            database.ref('users').once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    showToast("No users to export", "error");
+                    return;
+                }
+
+                // Convert to array for sorting
+                const users = [];
+                snapshot.forEach(child => {
+                    users.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+
+                // Sort by registration date (newest first)
+                users.sort((a, b) => (b.registrationDate || 0) - (a.registrationDate || 0));
+
+                // Create CSV content
+                let csvContent = "User ID,Name,Email,Phone,Balance,Status,Registration Date,Last Login\n";
+                
+                users.forEach(user => {
+                    csvContent += `"${user.id}","${user.name || ''}","${user.email || ''}",` +
+                                 `"${user.phone || ''}","${formatCurrency(user.balance)}",` +
+                                 `"${user.status || 'active'}","${formatDate(user.registrationDate)}",` +
+                                 `"${formatDate(user.lastLogin)}"\n`;
+                });
+
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `users_${new Date().toISOString().slice(0,10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showToast("Users exported successfully", "success");
+
+            }).catch(error => {
+                console.error("Error exporting users:", error);
+                showToast("Error exporting users", "error");
+            });
+        }
+
+        // Add new user
+        function addNewUser() {
+            const name = document.getElementById('newUserName').value.trim();
+            const email = document.getElementById('newUserEmail').value.trim();
+            const password = document.getElementById('newUserPassword').value;
+            const phone = document.getElementById('newUserPhone').value.trim();
+            const balance = parseFloat(document.getElementById('newUserBalance').value) || 0;
+            const errorElement = document.getElementById('addUserError');
+
+            // Validate inputs
+            if (!name || !email || !password) {
+                errorElement.textContent = 'Name, email and password are required';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorElement.textContent = 'Password must be at least 6 characters';
+                return;
+            }
+
+            errorElement.textContent = '';
+
+            // Create user in Firebase Auth
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const userId = userCredential.user.uid;
+                    const userData = {
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        balance: balance,
+                        status: 'active',
+                        registrationDate: Date.now(),
+                        lastLogin: Date.now()
+                    };
+
+                    // Save user data to database
+                    return database.ref('users/' + userId).set(userData);
+                })
+                .then(() => {
+                    showToast("User created successfully", "success");
+                    document.getElementById('addUserModal').classList.remove('active');
+                    // Clear form
+                    document.getElementById('newUserName').value = '';
+                    document.getElementById('newUserEmail').value = '';
+                    document.getElementById('newUserPassword').value = '';
+                    document.getElementById('newUserPhone').value = '';
+                    document.getElementById('newUserBalance').value = '0';
+                    // Refresh users list
+                    loadUsersData();
+                })
+                .catch((error) => {
+                    console.error("Error adding user:", error);
+                    errorElement.textContent = error.message || 'Error creating user';
+                    showToast("Error creating user", "error");
+                });
         }
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkAdminAuth()) return;
             
+            // Set admin name
             document.getElementById('adminName').textContent = ADMIN_CREDENTIALS.userId;
             
             // Load users data
@@ -164,11 +994,39 @@
                     row.style.display = text.includes(searchTerm) ? '' : 'none';
                 });
             });
-            
-            // Export users
+
+            // Add user button
+            document.getElementById('addUserBtn').addEventListener('click', () => {
+                document.getElementById('addUserModal').classList.add('active');
+            });
+
+            // Export users button
             document.getElementById('exportUsersBtn').addEventListener('click', exportUsers);
             
-            // Logout
+            // Close modals buttons
+            document.querySelectorAll('.modal-close, #closeDetailsBtn, #cancelAddUser').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('userDetailsModal').classList.remove('active');
+                    document.getElementById('addUserModal').classList.remove('active');
+                });
+            });
+
+            // Confirm add user
+            document.getElementById('confirmAddUser').addEventListener('click', addNewUser);
+
+            // Deactivate user button in modal
+            document.getElementById('deactivateUserBtn').addEventListener('click', function() {
+                const userId = this.getAttribute('data-userid');
+                updateUserStatus(userId, 'inactive');
+            });
+
+            // Activate user button in modal
+            document.getElementById('activateUserBtn').addEventListener('click', function() {
+                const userId = this.getAttribute('data-userid');
+                updateUserStatus(userId, 'active');
+            });
+
+            // Logout functionality
             document.querySelectorAll('#logoutBtn, #logoutLink').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -177,11 +1035,6 @@
                 });
             });
         });
-
-        function exportUsers() {
-            // Implementation for exporting users to CSV
-            // ...
-        }
     </script>
 </body>
 </html>
