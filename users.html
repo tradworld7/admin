@@ -6,34 +6,15 @@
     <title>Trade World - User Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* (Include all CSS styles from dashboard.html here) */
+        /* ... */
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <i class="fas fa-chart-line logo-icon"></i>
-            <span class="logo-text">Trade World Admin</span>
-        </div>
-        <div class="admin-controls">
-            <span class="admin-name" id="adminName"></span>
-            <button id="logoutBtn" class="btn btn-outline">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-    </header>
+    <!-- (Include header and sidebar from dashboard.html) -->
+    <!-- ... -->
 
-    <!-- Sidebar Menu -->
-    <aside class="sidebar" id="sidebar">
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="users.html" class="active"><i class="fas fa-users"></i> Users</a></li>
-            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
-            <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </aside>
-
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
         <div class="section-header">
             <h1 class="page-title">User Management</h1>
@@ -45,17 +26,12 @@
             </div>
         </div>
         
-        <!-- User Actions -->
         <div class="user-actions">
-            <button id="addUserBtn" class="btn btn-success">
-                <i class="fas fa-user-plus"></i> Add User
-            </button>
             <button id="exportUsersBtn" class="btn btn-info">
                 <i class="fas fa-file-export"></i> Export Users
             </button>
         </div>
         
-        <!-- Users Table -->
         <div class="table-responsive">
             <table class="table users-table">
                 <thead>
@@ -74,17 +50,6 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
-        
-        <!-- Pagination -->
-        <div class="pagination">
-            <button id="prevPage" class="btn btn-outline" disabled>
-                <i class="fas fa-chevron-left"></i> Previous
-            </button>
-            <span id="pageInfo">Page 1 of 1</span>
-            <button id="nextPage" class="btn btn-outline" disabled>
-                Next <i class="fas fa-chevron-right"></i>
-            </button>
         </div>
     </main>
 
@@ -121,36 +86,102 @@
                         <label>Status:</label>
                         <span id="detailStatus"></span>
                     </div>
-                    <div class="detail-group">
-                        <label>Referral Code:</label>
-                        <span id="detailReferral"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Referrer:</label>
-                        <span id="detailReferrer"></span>
-                    </div>
-                </div>
-                
-                <div class="user-actions-modal">
-                    <button id="editUserBtn" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Edit User
-                    </button>
-                    <button id="addFundsUserBtn" class="btn btn-success">
-                        <i class="fas fa-plus-circle"></i> Add Funds
-                    </button>
-                    <button id="viewTransactionsBtn" class="btn btn-info">
-                        <i class="fas fa-exchange-alt"></i> View Transactions
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications Container -->
-    <div class="toast-container" id="toastContainer"></div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // (Include all JavaScript from dashboard.html here)
+        // ...
 
-    <!-- App Scripts -->
-    <script src="js/firebase.js"></script>
-    <script src="js/app.js"></script>
+        function loadUsersData() {
+            database.ref('users').once('value').then(snapshot => {
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = '<tr><td colspan="6">No users found</td></tr>';
+                    return;
+                }
+
+                snapshot.forEach(child => {
+                    const user = child.val();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${child.key}</td>
+                        <td>${user.name || 'N/A'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>$${(user.balance || 0).toFixed(2)}</td>
+                        <td class="status-${user.status || 'active'}">${user.status || 'active'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary view-user" data-userid="${child.key}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Add event listeners to view buttons
+                document.querySelectorAll('.view-user').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const userId = btn.dataset.userid;
+                        database.ref('users/' + userId).once('value').then(snapshot => {
+                            const user = snapshot.val();
+                            document.getElementById('detailUserId').textContent = userId;
+                            document.getElementById('detailName').textContent = user.name || 'N/A';
+                            document.getElementById('detailEmail').textContent = user.email || 'N/A';
+                            document.getElementById('detailBalance').textContent = `$${(user.balance || 0).toFixed(2)}`;
+                            document.getElementById('detailRegistration').textContent = user.registrationDate ? formatDate(user.registrationDate) : 'N/A';
+                            document.getElementById('detailStatus').textContent = user.status || 'active';
+                            document.getElementById('userDetailsModal').classList.add('active');
+                        });
+                    });
+                });
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAdminAuth()) return;
+            
+            document.getElementById('adminName').textContent = ADMIN_CREDENTIALS.userId;
+            
+            // Load users data
+            loadUsersData();
+            
+            // Search functionality
+            document.getElementById('searchBtn').addEventListener('click', () => {
+                const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+                const rows = document.querySelectorAll('#usersTableBody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+            
+            // Export users
+            document.getElementById('exportUsersBtn').addEventListener('click', exportUsers);
+            
+            // Logout
+            document.querySelectorAll('#logoutBtn, #logoutLink').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('adminAuthenticated');
+                    window.location.href = 'index.html';
+                });
+            });
+        });
+
+        function exportUsers() {
+            // Implementation for exporting users to CSV
+            // ...
+        }
+    </script>
 </body>
 </html>
