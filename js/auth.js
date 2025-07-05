@@ -44,3 +44,14 @@ function logoutAdmin() {
     localStorage.removeItem('adminAuthenticated');
     window.location.href = 'index.html';
 }
+// auth.js के अंत में डालें
+function checkAdminAuth() {
+    const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
+    
+    if (!isAuthenticated) {
+        alert("कृपया पहले लॉगिन करें");
+        window.location.href = '/admin/index.html';
+        return false;
+    }
+    return true;
+}
