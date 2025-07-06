@@ -12,6 +12,8 @@
             --secondary-color: #3f37c9;
             --danger-color: #f72585;
             --white-color: #ffffff;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
         }
 
         * {
@@ -33,6 +35,7 @@
         .auth-container {
             width: 100%;
             max-width: 450px;
+            padding: 0 15px;
         }
 
         .auth-card {
@@ -40,31 +43,32 @@
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .auth-header {
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
             background-color: var(--primary-color);
             color: white;
         }
 
         .auth-header .logo-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
         }
 
         .auth-header h1 {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
         }
 
         .auth-body {
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-group label {
@@ -97,6 +101,10 @@
             transition: all 0.3s ease;
             border: none;
             font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .btn-primary {
@@ -113,6 +121,7 @@
             margin-top: 1rem;
             text-align: center;
             font-size: 0.9rem;
+            min-height: 1.2rem;
         }
 
         .loading {
@@ -127,6 +136,39 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .auth-header {
+                padding: 1.25rem;
+            }
+            
+            .auth-header .logo-icon {
+                font-size: 1.75rem;
+            }
+            
+            .auth-header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .auth-body {
+                padding: 1.25rem;
+            }
+            
+            .form-control, .btn {
+                padding: 0.65rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .auth-header {
+                padding: 1rem;
+            }
+            
+            .auth-body {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -148,6 +190,9 @@
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                        <div class="password-toggle" style="position: relative;">
+                            <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+                        </div>
                     </div>
                     
                     <button type="submit" class="btn btn-primary" id="loginBtn">
@@ -184,23 +229,40 @@
         const auth = firebase.auth();
         const database = firebase.database();
 
+        // Admin credentials (for fallback)
+        const ADMIN_CREDENTIALS = {
+            email: "admin@tradeworld.com",
+            password: "Admin@1234"
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
             const authError = document.getElementById('authError');
             const loginBtn = document.getElementById('loginBtn');
             const btnText = document.getElementById('btnText');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
             
             // Check if user is already logged in
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    window.location.href = 'dashboard.html';
+                    // Verify admin status before redirecting
+                    verifyAdminStatus(user.uid);
                 }
             });
             
+            // Login form submission
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const adminId = document.getElementById('adminId').value.trim();
+                const email = document.getElementById('adminId').value.trim();
                 const password = document.getElementById('password').value;
                 
                 authError.textContent = '';
@@ -209,39 +271,88 @@
                 loginBtn.innerHTML = '<div class="loading"></div>';
                 
                 // Sign in with email and password
-                auth.signInWithEmailAndPassword(adminId, password)
+                auth.signInWithEmailAndPassword(email, password)
                     .then((userCredential) => {
-                        // Check if user is admin
-                        const user = userCredential.user;
-                        const userId = user.uid;
-                        
-                        // Check in database if user has admin privileges
-                        database.ref('admins/' + userId).once('value')
-                            .then((snapshot) => {
-                                if (snapshot.exists()) {
-                                    window.location.href = 'dashboard.html';
-                                } else {
-                                    auth.signOut();
-                                    authError.textContent = 'You do not have admin privileges';
-                                    resetLoginButton();
-                                }
-                            })
-                            .catch((error) => {
-                                authError.textContent = 'Error verifying admin privileges';
-                                resetLoginButton();
-                            });
+                        // Check admin privileges
+                        verifyAdminStatus(userCredential.user.uid);
                     })
                     .catch((error) => {
-                        authError.textContent = 'Invalid admin ID or password';
+                        handleLoginError(error);
+                    });
+            });
+            
+            // Verify admin status
+            function verifyAdminStatus(userId) {
+                database.ref('admins/' + userId).once('value')
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
+                            // Store authentication status
+                            localStorage.setItem('adminAuthenticated', 'true');
+                            localStorage.setItem('adminId', userId);
+                            // Redirect to dashboard
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            // Not an admin - sign out
+                            auth.signOut();
+                            showError('You do not have admin privileges');
+                            resetLoginButton();
+                        }
+                    })
+                    .catch((error) => {
+                        showError('Error verifying admin privileges');
                         resetLoginButton();
                     });
+            }
+            
+            // Handle login errors
+            function handleLoginError(error) {
+                console.error("Login error:", error);
+                let errorMessage = "Login failed. Please try again.";
                 
-                function resetLoginButton() {
-                    loginBtn.disabled = false;
-                    btnText.textContent = 'Login';
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span id="btnText">Login</span>';
+                switch(error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage = "Invalid email format";
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = "This account has been disabled";
+                        break;
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                        errorMessage = "Invalid email or password";
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = "Too many attempts. Try again later";
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = "Network error. Check your connection";
+                        break;
                 }
-            });
+                
+                showError(errorMessage);
+                resetLoginButton();
+            }
+            
+            // Show error message
+            function showError(message) {
+                authError.textContent = message;
+            }
+            
+            // Reset login button state
+            function resetLoginButton() {
+                loginBtn.disabled = false;
+                btnText.textContent = 'Login';
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span id="btnText">Login</span>';
+            }
+            
+            // Fallback admin login (for development/testing)
+            function fallbackAdminLogin() {
+                document.getElementById('adminId').value = ADMIN_CREDENTIALS.email;
+                document.getElementById('password').value = ADMIN_CREDENTIALS.password;
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+            
+            // Uncomment for development testing only:
+            // fallbackAdminLogin();
         });
     </script>
 </body>
