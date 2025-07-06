@@ -16,7 +16,7 @@ if (!firebase.apps.length) {
 }
 
 const auth = firebase.auth();
-const database = firebase.database();
+const ADMIN_EMAIL = "rkv858810@gmail.com";
 
 // Handle login form submission
 document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -41,20 +41,18 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     // Sign in with email and password
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Check if user is admin
-            return database.ref('admins/' + userCredential.user.uid).once('value')
-                .then(snapshot => {
-                    if (snapshot.exists()) {
-                        // Store authentication state
-                        localStorage.setItem('adminAuthenticated', 'true');
-                        localStorage.setItem('adminId', userCredential.user.uid);
-                        window.location.href = '../index.html';
-                    } else {
-                        // Not an admin
-                        auth.signOut();
-                        throw new Error('adminAccessDenied');
-                    }
-                });
+            // Check if this is the admin email
+            if (userCredential.user.email !== ADMIN_EMAIL) {
+                throw new Error('admin-access-denied');
+            }
+            
+            // Store authentication state
+            localStorage.setItem('adminAuthenticated', 'true');
+            localStorage.setItem('adminId', userCredential.user.uid);
+            localStorage.setItem('adminEmail', userCredential.user.email);
+            
+            // Redirect to dashboard
+            window.location.href = '../index.html';
         })
         .catch((error) => {
             console.error("Login error:", error);
@@ -64,10 +62,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
             loginSpinner.style.display = 'none';
             
             // Show error message
-            switch (error.message) {
-                case 'adminAccessDenied':
-                    errorElement.textContent = 'Access denied. Only admins can login here.';
-                    break;
+            switch (error.code || error.message) {
                 case 'auth/invalid-email':
                     errorElement.textContent = 'Invalid email address';
                     break;
@@ -79,6 +74,10 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
                     break;
                 case 'auth/wrong-password':
                     errorElement.textContent = 'Incorrect password';
+                    break;
+                case 'admin-access-denied':
+                    errorElement.textContent = 'This email is not authorized for admin access';
+                    auth.signOut(); // Sign out the non-admin user
                     break;
                 default:
                     errorElement.textContent = 'Login failed. Please try again.';
