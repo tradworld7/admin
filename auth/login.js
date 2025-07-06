@@ -16,6 +16,7 @@ if (!firebase.apps.length) {
 }
 
 const auth = firebase.auth();
+const database = firebase.database();
 
 // Handle login form submission
 document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -40,12 +41,20 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     // Sign in with email and password
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Store authentication state
-            localStorage.setItem('adminAuthenticated', 'true');
-            localStorage.setItem('adminId', userCredential.user.uid);
-            
-            // Redirect to dashboard
-            window.location.href = '../index.html';
+            // Check if user is admin
+            return database.ref('admins/' + userCredential.user.uid).once('value')
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        // Store authentication state
+                        localStorage.setItem('adminAuthenticated', 'true');
+                        localStorage.setItem('adminId', userCredential.user.uid);
+                        window.location.href = '../index.html';
+                    } else {
+                        // Not an admin
+                        auth.signOut();
+                        throw new Error('adminAccessDenied');
+                    }
+                });
         })
         .catch((error) => {
             console.error("Login error:", error);
@@ -55,7 +64,10 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
             loginSpinner.style.display = 'none';
             
             // Show error message
-            switch (error.code) {
+            switch (error.message) {
+                case 'adminAccessDenied':
+                    errorElement.textContent = 'Access denied. Only admins can login here.';
+                    break;
                 case 'auth/invalid-email':
                     errorElement.textContent = 'Invalid email address';
                     break;
