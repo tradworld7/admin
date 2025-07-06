@@ -17,6 +17,10 @@ if (!firebase.apps.length) {
 
 const auth = firebase.auth();
 
+// Admin credentials
+const ADMIN_EMAIL = "rkv858810@gmail.com";
+const ADMIN_PASSWORD = "123@Ramesh";
+
 // Handle login form submission
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -40,12 +44,19 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     // Sign in with email and password
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Store authentication state
-            localStorage.setItem('adminAuthenticated', 'true');
-            localStorage.setItem('adminId', userCredential.user.uid);
-            
-            // Redirect to dashboard
-            window.location.href = '../index.html';
+            // Check if logged in user is admin
+            if (userCredential.user.email === ADMIN_EMAIL) {
+                // Store authentication state
+                localStorage.setItem('adminAuthenticated', 'true');
+                localStorage.setItem('adminEmail', ADMIN_EMAIL);
+                
+                // Redirect to dashboard
+                window.location.href = '../index.html';
+            } else {
+                // Not admin - sign them out
+                auth.signOut();
+                throw new Error('Access denied. Admin privileges required.');
+            }
         })
         .catch((error) => {
             console.error("Login error:", error);
@@ -63,13 +74,31 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
                     errorElement.textContent = 'This account has been disabled';
                     break;
                 case 'auth/user-not-found':
-                    errorElement.textContent = 'No user found with this email';
+                    errorElement.textContent = 'No admin found with this email';
                     break;
                 case 'auth/wrong-password':
                     errorElement.textContent = 'Incorrect password';
                     break;
                 default:
-                    errorElement.textContent = 'Login failed. Please try again.';
+                    errorElement.textContent = error.message || 'Login failed. Please try again.';
             }
         });
 });
+
+// Password reset function
+function resetPassword() {
+    const email = prompt("Please enter your admin email address:");
+    if (email) {
+        if (email === ADMIN_EMAIL) {
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    alert("Password reset email sent to " + email);
+                })
+                .catch((error) => {
+                    alert("Error sending reset email: " + error.message);
+                });
+        } else {
+            alert("Only admin email can reset password");
+        }
+    }
+}
