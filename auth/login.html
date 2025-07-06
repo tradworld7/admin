@@ -165,6 +165,54 @@
     <!-- Firebase and App Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="../js/login.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBshAGZScyo7PJegLHMzORbkkrCLGD6U5s",
+            authDomain: "mywebsite-600d3.firebaseapp.com",
+            databaseURL: "https://mywebsite-600d3-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mywebsite-600d3",
+            storageBucket: "mywebsite-600d3.appspot.com",
+            messagingSenderId: "584485288598",
+            appId: "1:584485288598:web:01856eaa18ba5ada49e0b7",
+            measurementId: "G-GQ9J9QH42J"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('loginError');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            
+            // Hardcoded credentials for testing
+            const ADMIN_EMAIL = "rkv858810@gmail.com";
+            const ADMIN_PASSWORD = "123@Ramesh";
+            
+            // Validate against hardcoded credentials
+            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                loginBtnText.textContent = "Logging in...";
+                loginSpinner.style.display = "inline-block";
+                
+                // Simulate Firebase login (for testing)
+                setTimeout(() => {
+                    localStorage.setItem('adminAuthenticated', 'true');
+                    window.location.href = "../index.html";
+                }, 1000);
+            } else {
+                errorElement.textContent = "Invalid email or password";
+            }
+        });
+    </script>
 </body>
 </html>
