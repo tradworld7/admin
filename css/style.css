@@ -98,10 +98,53 @@ header {
     background-color: var(--primary-color);
     color: var(--white-color);
 }
+ /* Add these styles to your existing CSS */
 
+.copy-btn {
+    background: none;
+    border: none;
+    color: var(--gray-color);
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 5px;
+    transition: color 0.2s ease;
+}
+
+.copy-btn:hover {
+    color: var(--primary-color);
+}
+
+.copyable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.copyable:hover {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+}
+
+.copyable::after {
+    content: "📋";
+    margin-left: 5px;
+    font-size: 0.8em;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.copyable:hover::after {
+    opacity: 1;
+}
+
+.btn-sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+}
 .btn-primary:hover {
     background-color: var(--secondary-color);
 }
+
 
 .btn-success {
     background-color: var(--success-color);
