@@ -713,7 +713,7 @@
                     <label for="fundNote">Note (Optional)</label>
                     <input type="text" id="fundNote" class="form-control" placeholder="Reason for adding funds">
                 </div>
-                <div id="addFundsError" class="error-message"></div>
+                <div id="addFundsError" class="error-message" style="color: red;"></div>
             </div>
             <div class="modal-footer">
                 <button id="cancelAddFunds" class="btn btn-outline">Cancel</button>
@@ -1028,24 +1028,42 @@
                     localStorage.removeItem('adminAuthenticated');
                     localStorage.removeItem('adminId');
                     // Sign out from Firebase
-                    auth.signOut();
-                    // Redirect to login page
-                    window.location.href = 'index.html';
+                    auth.signOut().then(() => {
+                        // Redirect to login page
+                        window.location.href = 'index.html';
+                    }).catch(error => {
+                        console.error("Logout error:", error);
+                        showToast("Logout failed. Please try again.", "error");
+                    });
                 });
             });
         }
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAdminAuth()) return;
+            // Check authentication first
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in
+                    localStorage.setItem('adminAuthenticated', 'true');
+                    localStorage.setItem('adminId', user.uid);
+                    
+                    // Set admin name
+                    document.getElementById('adminName').textContent = user.email || 'Admin';
+                    
+                    // Load data
+                    loadDashboardData();
+                    setupDashboardEventListeners();
+                } else {
+                    // User is signed out
+                    localStorage.removeItem('adminAuthenticated');
+                    localStorage.removeItem('adminId');
+                    window.location.href = 'index.html';
+                }
+            });
 
-            // Set admin name
-            const adminId = localStorage.getItem('adminId') || 'Admin';
-            document.getElementById('adminName').textContent = adminId;
-            
-            // Load data
-            loadDashboardData();
-            setupDashboardEventListeners();
+            // Check if we have authentication in localStorage (fallback)
+            if (!checkAdminAuth()) return;
         });
     </script>
 </body>
