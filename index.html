@@ -48,7 +48,12 @@
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
-                <div class="card-value" id="totalUsers">0</div>
+                <div class="card-value">
+                    <span id="totalUsers">0</span>
+                    <button class="copy-btn" onclick="copyToClipboard('totalUsers')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
                 <div class="card-footer">
                     Registered users
                 </div>
@@ -61,7 +66,12 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                 </div>
-                <div class="card-value" id="activeInvestments">0</div>
+                <div class="card-value">
+                    <span id="activeInvestments">0</span>
+                    <button class="copy-btn" onclick="copyToClipboard('activeInvestments')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
                 <div class="card-footer">Currently active investments</div>
             </div>
             
@@ -72,7 +82,12 @@
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
                 </div>
-                <div class="card-value" id="totalDeposits">$0.00</div>
+                <div class="card-value">
+                    <span id="totalDeposits">$0.00</span>
+                    <button class="copy-btn" onclick="copyToClipboard('totalDeposits')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
                 <div class="card-footer">All-time deposits</div>
             </div>
             
@@ -83,7 +98,12 @@
                         <i class="fas fa-wallet"></i>
                     </div>
                 </div>
-                <div class="card-value" id="pendingWithdrawals">0</div>
+                <div class="card-value">
+                    <span id="pendingWithdrawals">0</span>
+                    <button class="copy-btn" onclick="copyToClipboard('pendingWithdrawals')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
                 <div class="card-footer">Awaiting approval</div>
             </div>
         </div>
@@ -143,7 +163,9 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="userId">User ID</label>
+                    <label for="userId">User ID <button class="btn-sm btn-outline" onclick="pasteFromClipboard('userId')">
+                        <i class="fas fa-paste"></i> Paste
+                    </button></label>
                     <input type="text" id="userId" class="form-control" placeholder="Enter user ID">
                 </div>
                 <div class="form-group">
