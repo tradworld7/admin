@@ -3,198 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade World - Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <title>Trade World Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <button class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="logo">
-            <i class="fas fa-chart-line logo-icon"></i>
-            <span class="logo-text">Trade World Admin</span>
+    <div class="login-container" id="login-container">
+        <div class="login-form">
+            <h2 class="text-center mb-4">Admin Login</h2>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter your email">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter your password">
+            </div>
+            <button class="btn btn-primary w-100" onclick="login()">Login</button>
         </div>
-        <div class="admin-controls">
-            <span class="admin-name" id="adminName"></span>
-            <button id="logoutBtn" class="btn btn-outline">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-    </header>
+    </div>
 
-    <!-- Sidebar Menu -->
-    <aside class="sidebar" id="sidebar">
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
-            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
-            <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </aside>
+    <div class="container-fluid admin-dashboard" id="admin-dashboard" style="display: none;">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="sidebar-header">
+                    <h3>Trade World</h3>
+                    <p>Admin Panel</p>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('dashboard-section')">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('users-section')">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('deposits-section')">
+                            <i class="fas fa-money-bill-wave"></i> Deposits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('withdrawals-section')">
+                            <i class="fas fa-wallet"></i> Withdrawals
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('transactions-section')">
+                            <i class="fas fa-exchange-alt"></i> Transactions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-    <!-- Main Content -->
-    <main class="main-content" id="mainContent">
-        <h1 class="page-title">Admin Dashboard</h1>
-        
-        <div class="dashboard-cards">
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Total Users</span>
-                    <div class="card-icon users">
-                        <i class="fas fa-users"></i>
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <!-- Dashboard Section -->
+                <div class="section" id="dashboard-section">
+                    <h2>Dashboard</h2>
+                    <div class="row stats-row">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <h3 id="total-users">0</h3>
+                                <p>Total Users</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <h3 id="total-deposits">$0</h3>
+                                <p>Total Deposits</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <h3 id="total-withdrawals">$0</h3>
+                                <p>Total Withdrawals</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recent-activity mt-4">
+                        <h4>Recent Activity</h4>
+                        <div class="activity-list" id="recent-activity">
+                            <!-- Activity items will be added here dynamically -->
+                        </div>
                     </div>
                 </div>
-                <div class="card-value">
-                    <span id="totalUsers">0</span>
-                    <button class="copy-btn" onclick="copyToClipboard('totalUsers')">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <div class="card-footer">
-                    Registered users
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Active Investments</span>
-                    <div class="card-icon investments">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                </div>
-                <div class="card-value">
-                    <span id="activeInvestments">0</span>
-                    <button class="copy-btn" onclick="copyToClipboard('activeInvestments')">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <div class="card-footer">Currently active investments</div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Total Deposits</span>
-                    <div class="card-icon deposits">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                </div>
-                <div class="card-value">
-                    <span id="totalDeposits">$0.00</span>
-                    <button class="copy-btn" onclick="copyToClipboard('totalDeposits')">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <div class="card-footer">All-time deposits</div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Pending Withdrawals</span>
-                    <div class="card-icon withdrawals">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                </div>
-                <div class="card-value">
-                    <span id="pendingWithdrawals">0</span>
-                    <button class="copy-btn" onclick="copyToClipboard('pendingWithdrawals')">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <div class="card-footer">Awaiting approval</div>
-            </div>
-        </div>
-        
-        <!-- Quick Actions Section -->
-        <div class="quick-actions">
-            <h2 class="section-title">Quick Actions</h2>
-            <div class="action-buttons">
-                <button id="addFundsBtn" class="btn btn-primary">
-                    <i class="fas fa-plus-circle"></i> Add Funds to User
-                </button>
-                <button id="approveWithdrawalsBtn" class="btn btn-success">
-                    <i class="fas fa-check-circle"></i> Approve Withdrawals
-                </button>
-                <button id="viewTransactionsBtn" class="btn btn-info">
-                    <i class="fas fa-exchange-alt"></i> View Transactions
-                </button>
-            </div>
-        </div>
-        
-        <!-- Recent Activity Section -->
-        <div class="recent-activity">
-            <div class="section-header">
-                <h2 class="section-title">Recent Activity</h2>
-                <button id="refreshActivity" class="btn btn-outline">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
-            </div>
-            
-            <div class="table-responsive">
-                <table class="table activity-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>User</th>
-                            <th>Action</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activityTableBody">
-                        <tr>
-                            <td colspan="5" class="text-center">Loading activity...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
 
-    <!-- Add Funds Modal -->
-    <div class="modal" id="addFundsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add Funds to User</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="userId">User ID <button class="btn-sm btn-outline" onclick="pasteFromClipboard('userId')">
-                        <i class="fas fa-paste"></i> Paste
-                    </button></label>
-                    <input type="text" id="userId" class="form-control" placeholder="Enter user ID">
+                <!-- Users Section -->
+                <div class="section" id="users-section" style="display: none;">
+                    <h2>Users Management</h2>
+                    <div class="search-bar mb-3">
+                        <input type="text" class="form-control" id="user-search" placeholder="Search users...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Balance</th>
+                                    <th>Join Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table">
+                                <!-- Users will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="fundAmount">Amount ($)</label>
-                    <input type="number" id="fundAmount" class="form-control" placeholder="0.00" step="0.01" min="0">
+
+                <!-- Deposits Section -->
+                <div class="section" id="deposits-section" style="display: none;">
+                    <h2>Deposit Requests</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Amount</th>
+                                    <th>Transaction Hash</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deposits-table">
+                                <!-- Deposit requests will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="fundNote">Note (Optional)</label>
-                    <input type="text" id="fundNote" class="form-control" placeholder="Reason for adding funds">
+
+                <!-- Withdrawals Section -->
+                <div class="section" id="withdrawals-section" style="display: none;">
+                    <h2>Withdrawal Requests</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Amount</th>
+                                    <th>Wallet Address</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="withdrawals-table">
+                                <!-- Withdrawal requests will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div id="addFundsError" class="error-message" style="color: red;"></div>
-            </div>
-            <div class="modal-footer">
-                <button id="cancelAddFunds" class="btn btn-outline">Cancel</button>
-                <button id="confirmAddFunds" class="btn btn-primary">
-                    <span id="addFundsBtnText">Add Funds</span>
-                    <span id="addFundsSpinner" class="loading-spinner" style="display: none;"></span>
-                </button>
+
+                <!-- Transactions Section -->
+                <div class="section" id="transactions-section" style="display: none;">
+                    <h2>Transaction History</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Details</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-table">
+                                <!-- Transactions will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Send Money Modal -->
+                <div class="modal fade" id="sendMoneyModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Send Electronic Money</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">User ID</label>
+                                    <input type="text" class="form-control" id="send-user-id" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="send-user-name" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Amount ($)</label>
+                                    <input type="number" class="form-control" id="send-amount" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="send-description"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="sendMoney()">Send Money</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Firebase and App Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
