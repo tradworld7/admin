@@ -1,298 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade World - Admin Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #4361ee;
-            --primary-light: #e6e9ff;
-            --secondary-color: #3f37c9;
-            --success-color: #4cc9f0;
-            --danger-color: #f72585;
-            --warning-color: #f8961e;
-            --info-color: #4895ef;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-            --gray-color: #6c757d;
-            --white-color: #ffffff;
-            --border-radius: 10px;
-            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s ease;
-        }
+<!-- Same HTML/CSS as signup.html, just change the form and script -->
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fa;
-            color: var(--dark-color);
-            line-height: 1.6;
-        }
-
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 2rem;
-        }
-
-        .auth-card {
-            background-color: var(--white-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 450px;
-        }
-
-        .auth-title {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--dark-color);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-color);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid transparent;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--white-color);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-
-        .auth-footer {
-            margin-top: 1.5rem;
-            text-align: center;
-            color: var(--gray-color);
-            font-size: 0.9rem;
-        }
-
-        .auth-footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: var(--white-color);
-            animation: spin 1s ease-in-out infinite;
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1200;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .toast {
-            padding: 1rem 1.5rem;
-            border-radius: var(--border-radius);
-            color: var(--white-color);
-            box-shadow: var(--box-shadow);
-            animation: slideIn 0.3s ease forwards;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            min-width: 300px;
-        }
-
-        .toast.success {
-            background-color: var(--success-color);
-        }
-
-        .toast.error {
-            background-color: var(--danger-color);
-        }
-
-        .toast.warning {
-            background-color: var(--warning-color);
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--white-color);
-            cursor: pointer;
-            font-size: 1rem;
-            opacity: 0.8;
-            transition: var(--transition);
-        }
-
-        .toast-close:hover {
-            opacity: 1;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="auth-container">
-        <div class="auth-card">
-            <h2 class="auth-title">Admin Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" class="form-control" placeholder="rkv858810@gmail.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
-                    <span id="loginBtnText">Login</span>
-                    <span id="loginSpinner" class="spinner" style="display: none;"></span>
-                </button>
-            </form>
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Admin Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="rkv858810@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="123@rkve858810" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+                <span id="loginBtnText">Login</span>
+                <span id="loginSpinner" class="spinner" style="display: none;"></span>
+            </button>
+        </form>
+        <div class="auth-footer">
+            Don't have an account? <a href="signup.html">Sign Up</a>
         </div>
     </div>
+</div>
 
-    <!-- Toast Notifications Container -->
-    <div class="toast-container" id="toastContainer"></div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+    import { 
+        getAuth, 
+        signInWithEmailAndPassword,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
 
-    <script>
-        // Admin credentials
-        const ADMIN_EMAIL = "rkv858810@gmail.com";
-        const ADMIN_PASSWORD = "123@rkve858810";
+    const firebaseConfig = {
+        apiKey: "AIzaSyBshAGZScyo7PJegLHMzORbkkrCLGD6U5s",
+        authDomain: "mywebsite-600d3.firebaseapp.com",
+        databaseURL: "https://mywebsite-600d3-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "mywebsite-600d3",
+        storageBucket: "mywebsite-600d3.appspot.com",
+        messagingSenderId: "584485288598",
+        appId: "1:584485288598:web:01856eaa18ba5ada49e0b7",
+        measurementId: "G-GQ9J9QH42J"
+    };
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup login form
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-                
-                const loginBtn = document.getElementById('loginBtn');
-                const loginBtnText = document.getElementById('loginBtnText');
-                const loginSpinner = document.getElementById('loginSpinner');
-                
-                loginBtn.disabled = true;
-                loginBtnText.textContent = 'Logging in...';
-                loginSpinner.style.display = 'inline-block';
-                
-                // Simple timeout to simulate loading
-                setTimeout(() => {
-                    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                        showToast('Login successful! Redirecting...', 'success');
-                        // Redirect to admin dashboard after 1 second
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1000);
-                    } else {
-                        showToast('Invalid email or password', 'error');
-                    }
-                    
-                    loginBtn.disabled = false;
-                    loginBtnText.textContent = 'Login';
-                    loginSpinner.style.display = 'none';
-                }, 1000);
-            });
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            
+            loginBtn.disabled = true;
+            loginBtnText.textContent = 'Logging in...';
+            loginSpinner.style.display = 'inline-block';
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast('Login successful! Redirecting...', 'success');
+                window.location.href = 'index.html';
+            } catch (error) {
+                let errorMessage = 'Login failed';
+                if (error.code === 'auth/invalid-login-credentials') {
+                    errorMessage = 'Invalid email or password';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Account temporarily disabled due to many failed attempts';
+                } else if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'Account not found. Please sign up first.';
+                }
+                showToast(errorMessage, 'error');
+            }
+            
+            loginBtn.disabled = false;
+            loginBtnText.textContent = 'Login';
+            loginSpinner.style.display = 'none';
         });
+    });
 
-        // Show toast notification
-        function showToast(message, type) {
-            const toastContainer = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <span>${message}</span>
-                <button class="toast-close">&times;</button>
-            `;
-            
-            toastContainer.appendChild(toast);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                toast.remove();
-            }, 5000);
-            
-            // Close button
-            toast.querySelector('.toast-close').addEventListener('click', () => {
-                toast.remove();
-            });
-        }
-    </script>
-</body>
-</html>
+    function showToast(message, type) {
+        const toastContainer = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <span>${message}</span>
+            <button class="toast-close">&times;</button>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+        
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.remove();
+        });
+    }
+</script>
