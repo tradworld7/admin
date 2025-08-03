@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* All previous CSS styles remain exactly the same */
         :root {
             --primary-color: #4361ee;
             --primary-light: #e6e9ff;
@@ -31,7 +30,511 @@
             --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
-        /* Rest of your existing CSS... */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--white-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: var(--header-height);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: var(--white-color);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--header-height));
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: var(--transition);
+            gap: 0.8rem;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu li a.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .sidebar-menu li a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Admin Content Styles */
+        .admin-container {
+            margin-top: var(--header-height);
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: var(--transition);
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-title i {
+            color: var(--primary-color);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--dark-color);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Admin Cards */
+        .admin-card {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-stat {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .admin-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-stat-label {
+            font-size: 1rem;
+            color: var(--gray-color);
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--border-radius);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .table th {
+            background-color: rgba(0, 0, 0, 0.02);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 500;
+            color: var(--gray-color);
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover td {
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+
+        /* Form Styles */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+        .status-completed {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+        .status-rejected {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Toast Notifications Container */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1200;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            color: var(--white-color);
+            box-shadow: var(--box-shadow);
+            animation: slideIn 0.3s ease forwards;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            min-width: 300px;
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--white-color);
+            cursor: pointer;
+            font-size: 1rem;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* Auth Pages Styles */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            background-color: #f5f7fa;
+        }
+
+        .auth-card {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .auth-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--white-color);
+            animation: spin 1s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .text-muted {
+            color: var(--gray-color);
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .admin-container {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .admin-container {
+                padding: 1.5rem;
+            }
+            
+            .auth-card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            header {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+
+            .admin-stats {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -65,11 +568,371 @@
 
     <!-- Admin Content Sections -->
     <div class="admin-container" id="adminContent">
-        <!-- All your existing admin content sections remain the same -->
-        <!-- Dashboard, Users, Transactions, Packages, Settings sections -->
+        <!-- Dashboard Section -->
+        <div id="dashboardSection">
+            <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            
+            <div class="admin-stats">
+                <div class="admin-stat">
+                    <div class="admin-stat-value" id="totalUsers">0</div>
+                    <div class="admin-stat-label">Total Users</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-value" id="totalInvestments">$0</div>
+                    <div class="admin-stat-label">Total Investments</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-value" id="totalProfit">$0</div>
+                    <div class="admin-stat-label">System Profit</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-value" id="activePackages">0</div>
+                    <div class="admin-stat-label">Active Packages</div>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <h2 class="section-title">Recent Transactions</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTransactions">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Loading transactions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <h2 class="section-title">Quick Actions</h2>
+                <div class="form-row">
+                    <button id="addFundsBtn" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Add Funds to User
+                    </button>
+                    <button id="createUserBtn" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Create New User
+                    </button>
+                    <button id="viewReportsBtn" class="btn btn-primary">
+                        <i class="fas fa-chart-pie"></i> View Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Users Section -->
+        <div id="usersSection" style="display: none;">
+            <h1 class="page-title"><i class="fas fa-users"></i> User Management</h1>
+            
+            <div class="admin-card">
+                <div class="form-row">
+                    <div class="form-group" style="flex-grow: 1;">
+                        <label for="searchUser">Search Users</label>
+                        <input type="text" id="searchUser" class="form-control" placeholder="Enter user ID, name or email">
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button id="searchUserBtn" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Balance</th>
+                                <th>Profit</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Search for users to display results</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="admin-card" id="userDetailsCard" style="display: none;">
+                <h2 class="section-title">User Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>User ID</label>
+                        <input type="text" id="adminUserId" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="adminUserName" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" id="adminUserEmail" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Join Date</label>
+                        <input type="text" id="adminUserJoinDate" class="form-control" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Balance ($)</label>
+                        <input type="number" id="adminUserBalance" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Trading Profit ($)</label>
+                        <input type="number" id="adminUserProfit" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Referral Earnings ($)</label>
+                        <input type="number" id="adminUserReferral" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Team Earnings ($)</label>
+                        <input type="number" id="adminUserTeam" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <button id="updateUserBtn" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update User
+                    </button>
+                    <button id="resetPasswordBtn" class="btn btn-primary">
+                        <i class="fas fa-key"></i> Reset Password
+                    </button>
+                    <button id="deleteUserBtn" class="btn btn-primary" style="background-color: var(--danger-color);">
+                        <i class="fas fa-trash"></i> Delete User
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transactions Section -->
+        <div id="transactionsSection" style="display: none;">
+            <h1 class="page-title"><i class="fas fa-exchange-alt"></i> Transaction History</h1>
+            
+            <div class="admin-card">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="transactionType">Transaction Type</label>
+                        <select id="transactionType" class="form-control">
+                            <option value="all">All Types</option>
+                            <option value="investment">Investment</option>
+                            <option value="withdrawal">Withdrawal</option>
+                            <option value="deposit">Deposit</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="referral">Referral</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionStatus">Status</label>
+                        <select id="transactionStatus" class="form-control">
+                            <option value="all">All Statuses</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionDate">Date Range</label>
+                        <select id="transactionDate" class="form-control">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button id="filterTransactionsBtn" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTable">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">Loading transactions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Packages Section -->
+        <div id="packagesSection" style="display: none;">
+            <h1 class="page-title"><i class="fas fa-box-open"></i> Investment Packages</h1>
+            
+            <div class="admin-card">
+                <div class="form-row">
+                    <div class="form-group" style="flex-grow: 1;">
+                        <label for="packageStatus">Package Status</label>
+                        <select id="packageStatus" class="form-control">
+                            <option value="all">All Packages</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button id="filterPackagesBtn" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Package ID</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Expected Return</th>
+                                <th>Status</th>
+                                <th>Purchase Date</th>
+                                <th>Maturity Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="packagesTable">
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">Loading packages...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Section -->
+        <div id="settingsSection" style="display: none;">
+            <h1 class="page-title"><i class="fas fa-cog"></i> System Settings</h1>
+            
+            <div class="admin-card">
+                <h2 class="section-title">Commission Rates</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="adminCommission">Admin Commission (%)</label>
+                        <input type="number" id="adminCommission" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="directCommission">Direct Referral (%)</label>
+                        <input type="number" id="directCommission" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="level1Commission">Level 1 Commission (%)</label>
+                        <input type="number" id="level1Commission" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="level2Commission">Level 2 Commission (%)</label>
+                        <input type="number" id="level2Commission" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="level3Commission">Level 3 Commission (%)</label>
+                        <input type="number" id="level3Commission" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="level4Commission">Level 4 Commission (%)</label>
+                        <input type="number" id="level4Commission" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="level5Commission">Level 5 Commission (%)</label>
+                        <input type="number" id="level5Commission" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="tradingPool">Trading Pool (%)</label>
+                        <input type="number" id="tradingPool" class="form-control" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+                <button id="saveSettingsBtn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </div>
+            
+            <div class="admin-card">
+                <h2 class="section-title">Package Settings</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="starterPackage">Starter Package ($)</label>
+                        <input type="number" id="starterPackage" class="form-control" min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="starterReturn">Starter Return (%)</label>
+                        <input type="number" id="starterReturn" class="form-control" min="0" max="1000" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="standardPackage">Standard Package ($)</label>
+                        <input type="number" id="standardPackage" class="form-control" min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="standardReturn">Standard Return (%)</label>
+                        <input type="number" id="standardReturn" class="form-control" min="0" max="1000" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="premiumPackage">Premium Package ($)</label>
+                        <input type="number" id="premiumPackage" class="form-control" min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="premiumReturn">Premium Return (%)</label>
+                        <input type="number" id="premiumReturn" class="form-control" min="0" max="1000" step="0.1">
+                    </div>
+                </div>
+                <button id="savePackagesBtn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Packages
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Login Modal (hidden when logged in) -->
+    <!-- Login Modal -->
     <div id="loginModal" class="auth-container" style="display: none;">
         <div class="auth-card">
             <h2 class="auth-title">Admin Login</h2>
@@ -80,16 +943,13 @@
                 </div>
                 <div class="form-group mb-3">
                     <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="123@rkve858810" required>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100" id="loginBtn">
                     <span id="loginBtnText">Login</span>
                     <span id="loginSpinner" class="spinner" style="display: none;"></span>
                 </button>
             </form>
-            <div class="auth-footer">
-                Don't have an account? <a href="signup.html">Sign Up</a>
-            </div>
         </div>
     </div>
 
@@ -101,8 +961,8 @@
         import { 
             getAuth, 
             onAuthStateChanged, 
-            signOut,
-            signInWithEmailAndPassword
+            signOut, 
+            signInWithEmailAndPassword 
         } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
         import { 
             getDatabase, 
@@ -130,34 +990,77 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Only allow this specific admin email
+        // Only allow this specific email to login as admin
         const ADMIN_EMAIL = "rkv858810@gmail.com";
 
+        // Global Variables
+        let currentUser = null;
+        let isAdmin = false;
+
+        // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            // Check auth state
+            // Setup sidebar toggle
+            document.getElementById('menuToggle').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+            
+            // Check if user is logged in
             onAuthStateChanged(auth, (user) => {
                 if (user) {
+                    currentUser = user;
+                    
+                    // Check if this is admin login
                     if (user.email === ADMIN_EMAIL) {
-                        // Show admin panel
-                        document.getElementById('loginModal').style.display = 'none';
-                        document.getElementById('adminContent').style.display = 'block';
-                        document.getElementById('sidebar').style.display = 'block';
-                        document.getElementById('userProfile').style.display = 'flex';
-                        
-                        // Load admin data
+                        isAdmin = true;
+                        showAdminPanel();
                         loadAdminData();
                     } else {
-                        // Not the authorized admin
+                        // Regular users shouldn't access admin panel
                         signOut(auth);
+                        showToast('Unauthorized access', 'error');
                         showLoginModal();
-                        showToast('Unauthorized access. Only admin can access this panel.', 'error');
                     }
                 } else {
-                    // No user logged in
+                    // Show login modal
                     showLoginModal();
                 }
             });
-
+            
+            // Setup navigation links
+            document.getElementById('dashboardLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('dashboardSection');
+            });
+            
+            document.getElementById('usersLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('usersSection');
+            });
+            
+            document.getElementById('transactionsLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('transactionsSection');
+                loadTransactions();
+            });
+            
+            document.getElementById('packagesLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('packagesSection');
+                loadPackages();
+            });
+            
+            document.getElementById('settingsLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection('settingsSection');
+                loadSettings();
+            });
+            
+            // Setup logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                logoutUser();
+            });
+            
             // Setup login form
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -173,21 +1076,29 @@
                 loginSpinner.style.display = 'inline-block';
                 
                 try {
+                    // First validate the email
+                    if (email !== ADMIN_EMAIL) {
+                        throw new Error('Only admin can login here');
+                    }
+                    
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    if (email === ADMIN_EMAIL) {
-                        showToast('Admin login successful!', 'success');
-                        document.getElementById('loginModal').style.display = 'none';
-                    } else {
-                        await signOut(auth);
-                        showToast('Invalid admin credentials', 'error');
-                    }
+                    showToast('Admin login successful!', 'success');
+                    document.getElementById('loginModal').style.display = 'none';
+                    isAdmin = true;
+                    showAdminPanel();
+                    loadAdminData();
                 } catch (error) {
-                    let errorMessage = 'Login failed';
-                    if (error.code === 'auth/invalid-login-credentials') {
-                        errorMessage = 'Invalid email or password';
-                    } else if (error.code === 'auth/too-many-requests') {
-                        errorMessage = 'Account temporarily disabled due to many failed attempts';
+                    let errorMessage = error.message;
+                    
+                    // Firebase specific errors
+                    if (error.code === 'auth/user-not-found') {
+                        errorMessage = 'User not found. Please sign up first.';
+                    } else if (error.code === 'auth/wrong-password') {
+                        errorMessage = 'Incorrect password';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'Invalid email address';
                     }
+                    
                     showToast(errorMessage, 'error');
                 }
                 
@@ -195,22 +1106,583 @@
                 loginBtnText.textContent = 'Login';
                 loginSpinner.style.display = 'none';
             });
-
-            // Setup logout
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
+            
+            // Setup user search
+            document.getElementById('searchUserBtn').addEventListener('click', async () => {
+                const searchTerm = document.getElementById('searchUser').value.trim();
+                if (!searchTerm) {
+                    showToast('Please enter search term', 'error');
+                    return;
+                }
+                
                 try {
-                    await signOut(auth);
-                    showToast('Logged out successfully', 'success');
-                    showLoginModal();
+                    const usersSnapshot = await get(ref(database, 'users'));
+                    const tbody = document.getElementById('usersTable');
+                    tbody.innerHTML = '';
+                    
+                    if (!usersSnapshot.exists()) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No users found</td></tr>';
+                        return;
+                    }
+                    
+                    const users = usersSnapshot.val();
+                    let foundUsers = [];
+                    
+                    // Search by ID, name or email
+                    Object.entries(users).forEach(([uid, user]) => {
+                        if (uid.includes(searchTerm)) {
+                            foundUsers.push({ uid, ...user });
+                        } else if (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+                            foundUsers.push({ uid, ...user });
+                        } else if (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) {
+                            foundUsers.push({ uid, ...user });
+                        }
+                    });
+                    
+                    if (foundUsers.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No matching users found</td></tr>';
+                        return;
+                    }
+                    
+                    // Display search results
+                    foundUsers.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.uid.substring(0, 8)}...</td>
+                            <td>${user.name || 'N/A'}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td>$${(user.balance || 0).toFixed(2)}</td>
+                            <td>$${(user.tradingProfit || 0).toFixed(2)}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm view-user" data-uid="${user.uid}">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    // Add event listeners to view buttons
+                    document.querySelectorAll('.view-user').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const userId = e.currentTarget.getAttribute('data-uid');
+                            const userSnapshot = await get(ref(database, `users/${userId}`));
+                            if (userSnapshot.exists()) {
+                                displayUserDetails(userSnapshot.val());
+                            }
+                        });
+                    });
+                    
                 } catch (error) {
-                    showToast('Error logging out', 'error');
+                    console.error('Error searching users:', error);
+                    showToast('Error searching users', 'error');
                 }
             });
-
-            // All your existing admin panel functionality remains the same
-            // (dashboard, users, transactions, packages, settings functionality)
+            
+            // Setup update user button
+            document.getElementById('updateUserBtn').addEventListener('click', async () => {
+                const userId = document.getElementById('adminUserId').value;
+                if (!userId) {
+                    showToast('No user selected', 'error');
+                    return;
+                }
+                
+                try {
+                    const name = document.getElementById('adminUserName').value;
+                    const balance = parseFloat(document.getElementById('adminUserBalance').value) || 0;
+                    const profit = parseFloat(document.getElementById('adminUserProfit').value) || 0;
+                    const referral = parseFloat(document.getElementById('adminUserReferral').value) || 0;
+                    const team = parseFloat(document.getElementById('adminUserTeam').value) || 0;
+                    
+                    await update(ref(database, `users/${userId}`), {
+                        name: name,
+                        balance: balance,
+                        tradingProfit: profit,
+                        referralEarnings: referral,
+                        teamEarnings: team
+                    });
+                    
+                    showToast('User updated successfully', 'success');
+                } catch (error) {
+                    console.error('Error updating user:', error);
+                    showToast('Error updating user', 'error');
+                }
+            });
+            
+            // Setup filter transactions
+            document.getElementById('filterTransactionsBtn').addEventListener('click', () => {
+                loadTransactions();
+            });
+            
+            // Setup filter packages
+            document.getElementById('filterPackagesBtn').addEventListener('click', () => {
+                loadPackages();
+            });
+            
+            // Setup save settings
+            document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+                try {
+                    const adminCommission = parseFloat(document.getElementById('adminCommission').value) || 0;
+                    const directCommission = parseFloat(document.getElementById('directCommission').value) || 0;
+                    const level1Commission = parseFloat(document.getElementById('level1Commission').value) || 0;
+                    const level2Commission = parseFloat(document.getElementById('level2Commission').value) || 0;
+                    const level3Commission = parseFloat(document.getElementById('level3Commission').value) || 0;
+                    const level4Commission = parseFloat(document.getElementById('level4Commission').value) || 0;
+                    const level5Commission = parseFloat(document.getElementById('level5Commission').value) || 0;
+                    const tradingPool = parseFloat(document.getElementById('tradingPool').value) || 0;
+                    
+                    await set(ref(database, 'settings/commissions'), {
+                        admin: adminCommission,
+                        direct: directCommission,
+                        levels: [
+                            level1Commission,
+                            level2Commission,
+                            level3Commission,
+                            level4Commission,
+                            level5Commission
+                        ],
+                        tradingPool: tradingPool
+                    });
+                    
+                    showToast('Settings saved successfully', 'success');
+                } catch (error) {
+                    console.error('Error saving settings:', error);
+                    showToast('Error saving settings', 'error');
+                }
+            });
+            
+            // Setup save packages
+            document.getElementById('savePackagesBtn').addEventListener('click', async () => {
+                try {
+                    const starterAmount = parseFloat(document.getElementById('starterPackage').value) || 0;
+                    const starterReturn = parseFloat(document.getElementById('starterReturn').value) || 0;
+                    const standardAmount = parseFloat(document.getElementById('standardPackage').value) || 0;
+                    const standardReturn = parseFloat(document.getElementById('standardReturn').value) || 0;
+                    const premiumAmount = parseFloat(document.getElementById('premiumPackage').value) || 0;
+                    const premiumReturn = parseFloat(document.getElementById('premiumReturn').value) || 0;
+                    
+                    await set(ref(database, 'settings/packages'), {
+                        starter: {
+                            amount: starterAmount,
+                            return: starterReturn
+                        },
+                        standard: {
+                            amount: standardAmount,
+                            return: standardReturn
+                        },
+                        premium: {
+                            amount: premiumAmount,
+                            return: premiumReturn
+                        }
+                    });
+                    
+                    showToast('Package settings saved successfully', 'success');
+                } catch (error) {
+                    console.error('Error saving package settings:', error);
+                    showToast('Error saving package settings', 'error');
+                }
+            });
+            
+            // Setup quick actions
+            document.getElementById('addFundsBtn').addEventListener('click', () => {
+                showSection('usersSection');
+                document.getElementById('searchUser').value = '';
+                document.getElementById('searchUser').focus();
+                showToast('Search for a user to add funds', 'info');
+            });
         });
 
+        // Show admin panel and hide login
+        function showAdminPanel() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('userProfile').style.display = 'flex';
+            
+            // Update admin avatar
+            document.getElementById('userAvatar').textContent = 'A';
+        }
+
+        // Show specific section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('usersSection').style.display = 'none';
+            document.getElementById('transactionsSection').style.display = 'none';
+            document.getElementById('packagesSection').style.display = 'none';
+            document.getElementById('settingsSection').style.display = 'none';
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active menu item
+            document.querySelectorAll('.sidebar-menu li a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            if (sectionId === 'dashboardSection') {
+                document.getElementById('dashboardLink').classList.add('active');
+            } else if (sectionId === 'usersSection') {
+                document.getElementById('usersLink').classList.add('active');
+            } else if (sectionId === 'transactionsSection') {
+                document.getElementById('transactionsLink').classList.add('active');
+            } else if (sectionId === 'packagesSection') {
+                document.getElementById('packagesLink').classList.add('active');
+            } else if (sectionId === 'settingsSection') {
+                document.getElementById('settingsLink').classList.add('active');
+            }
+        }
+
+        // Load admin dashboard data
+        async function loadAdminData() {
+            try {
+                // Load total users
+                const usersSnapshot = await get(ref(database, 'users'));
+                const totalUsers = usersSnapshot.exists() ? Object.keys(usersSnapshot.val()).length : 0;
+                document.getElementById('totalUsers').textContent = totalUsers;
+                
+                // Load total investments
+                const invoicesSnapshot = await get(ref(database, 'invoices'));
+                let totalInvestments = 0;
+                if (invoicesSnapshot.exists()) {
+                    Object.values(invoicesSnapshot.val()).forEach(inv => {
+                        totalInvestments += inv.amount || 0;
+                    });
+                }
+                document.getElementById('totalInvestments').textContent = `$${totalInvestments.toFixed(2)}`;
+                
+                // Load system profit
+                const systemProfit = await getValue('system/adminEarnings') || 0;
+                document.getElementById('totalProfit').textContent = `$${systemProfit.toFixed(2)}`;
+                
+                // Load active packages
+                const activePackages = await countActivePackages();
+                document.getElementById('activePackages').textContent = activePackages;
+                
+                // Load recent transactions
+                loadRecentTransactions();
+                
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+                showToast('Error loading admin data', 'error');
+            }
+        }
+
+        // Load recent transactions for dashboard
+        async function loadRecentTransactions() {
+            try {
+                const snapshot = await get(ref(database, 'transactions'));
+                const tbody = document.getElementById('recentTransactions');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No transactions yet</td></tr>';
+                    return;
+                }
+                
+                // Convert to array and sort by timestamp
+                const transactions = Object.entries(snapshot.val()).map(([id, tx]) => ({ id, ...tx }));
+                transactions.sort((a, b) => b.timestamp - a.timestamp);
+                
+                // Show only last 5 transactions
+                transactions.slice(0, 5).forEach(async tx => {
+                    const row = document.createElement('tr');
+                    
+                    const date = new Date(tx.timestamp).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    
+                    // Get user name
+                    let userName = 'User';
+                    if (tx.userId) {
+                        const userSnapshot = await get(ref(database, `users/${tx.userId}`));
+                        if (userSnapshot.exists()) {
+                            userName = userSnapshot.val().name || 'User';
+                        }
+                    }
+                    
+                    const type = tx.type.charAt(0).toUpperCase() + tx.type.slice(1);
+                    const amount = `$${tx.amount?.toFixed(2) || '0.00'}`;
+                    const details = tx.details || '';
+                    
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td>${userName}</td>
+                        <td>${type}</td>
+                        <td>${amount}</td>
+                        <td>${details}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading recent transactions:', error);
+                showToast('Error loading transactions', 'error');
+            }
+        }
+
+        // Load all transactions with filters
+        async function loadTransactions() {
+            try {
+                const typeFilter = document.getElementById('transactionType').value;
+                const statusFilter = document.getElementById('transactionStatus').value;
+                const dateFilter = document.getElementById('transactionDate').value;
+                
+                const snapshot = await get(ref(database, 'transactions'));
+                const tbody = document.getElementById('transactionsTable');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No transactions yet</td></tr>';
+                    return;
+                }
+                
+                // Convert to array and sort by timestamp
+                let transactions = Object.entries(snapshot.val()).map(([id, tx]) => ({ id, ...tx }));
+                transactions.sort((a, b) => b.timestamp - a.timestamp);
+                
+                // Apply filters
+                if (typeFilter !== 'all') {
+                    transactions = transactions.filter(tx => tx.type === typeFilter);
+                }
+                
+                if (statusFilter !== 'all') {
+                    transactions = transactions.filter(tx => tx.status === statusFilter);
+                }
+                
+                if (dateFilter !== 'all') {
+                    const now = new Date();
+                    let startDate;
+                    
+                    if (dateFilter === 'today') {
+                        startDate = new Date(now.setHours(0, 0, 0, 0));
+                    } else if (dateFilter === 'week') {
+                        const day = now.getDay();
+                        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+                        startDate = new Date(now.setDate(diff));
+                        startDate.setHours(0, 0, 0, 0);
+                    } else if (dateFilter === 'month') {
+                        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    } else if (dateFilter === 'year') {
+                        startDate = new Date(now.getFullYear(), 0, 1);
+                    }
+                    
+                    if (startDate) {
+                        transactions = transactions.filter(tx => {
+                            const txDate = new Date(tx.timestamp);
+                            return txDate >= startDate;
+                        });
+                    }
+                }
+                
+                if (transactions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No matching transactions found</td></tr>';
+                    return;
+                }
+                
+                // Display transactions
+                transactions.forEach(async tx => {
+                    const row = document.createElement('tr');
+                    
+                    const date = new Date(tx.timestamp).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Get user name
+                    let userName = 'User';
+                    if (tx.userId) {
+                        const userSnapshot = await get(ref(database, `users/${tx.userId}`));
+                        if (userSnapshot.exists()) {
+                            userName = userSnapshot.val().name || 'User';
+                        }
+                    }
+                    
+                    const type = tx.type.charAt(0).toUpperCase() + tx.type.slice(1);
+                    const amount = `$${tx.amount?.toFixed(2) || '0.00'}`;
+                    const status = tx.status ? tx.status.charAt(0).toUpperCase() + tx.status.slice(1) : 'Completed';
+                    const details = tx.details || '';
+                    
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td>${userName}</td>
+                        <td>${type}</td>
+                        <td>${amount}</td>
+                        <td><span class="badge status-${tx.status || 'completed'}">${status}</span></td>
+                        <td>${details}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" data-id="${tx.id}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                showToast('Error loading transactions', 'error');
+            }
+        }
+
+        // Load packages with filters
+        async function loadPackages() {
+            try {
+                const statusFilter = document.getElementById('packageStatus').value;
+                
+                const snapshot = await get(ref(database, 'invoices'));
+                const tbody = document.getElementById('packagesTable');
+                tbody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No packages yet</td></tr>';
+                    return;
+                }
+                
+                // Convert to array and sort by purchase date
+                let packages = Object.entries(snapshot.val()).map(([id, pkg]) => ({ id, ...pkg }));
+                packages.sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate));
+                
+                // Apply status filter
+                if (statusFilter !== 'all') {
+                    packages = packages.filter(pkg => pkg.status === statusFilter);
+                }
+                
+                if (packages.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No matching packages found</td></tr>';
+                    return;
+                }
+                
+                // Display packages
+                packages.forEach(async pkg => {
+                    const row = document.createElement('tr');
+                    
+                    // Get user name
+                    let userName = 'User';
+                    if (pkg.userId) {
+                        const userSnapshot = await get(ref(database, `users/${pkg.userId}`));
+                        if (userSnapshot.exists()) {
+                            userName = userSnapshot.val().name || 'User';
+                        }
+                    }
+                    
+                    const purchaseDate = new Date(pkg.purchaseDate).toLocaleDateString();
+                    const maturityDate = new Date(pkg.maturityDate).toLocaleDateString();
+                    const status = pkg.status ? pkg.status.charAt(0).toUpperCase() + pkg.status.slice(1) : 'Active';
+                    
+                    row.innerHTML = `
+                        <td>${pkg.id.substring(0, 8)}...</td>
+                        <td>${userName}</td>
+                        <td>$${pkg.amount?.toFixed(2) || '0.00'}</td>
+                        <td>$${pkg.expectedReturn?.toFixed(2) || '0.00'}</td>
+                        <td><span class="badge status-${pkg.status || 'active'}">${status}</span></td>
+                        <td>${purchaseDate}</td>
+                        <td>${maturityDate}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" data-id="${pkg.id}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading packages:', error);
+                showToast('Error loading packages', 'error');
+            }
+        }
+
+        // Load settings
+        async function loadSettings() {
+            try {
+                // Load commission settings
+                const commissionsSnapshot = await get(ref(database, 'settings/commissions'));
+                if (commissionsSnapshot.exists()) {
+                    const commissions = commissionsSnapshot.val();
+                    document.getElementById('adminCommission').value = commissions.admin || 0;
+                    document.getElementById('directCommission').value = commissions.direct || 0;
+                    document.getElementById('level1Commission').value = commissions.levels?.[0] || 0;
+                    document.getElementById('level2Commission').value = commissions.levels?.[1] || 0;
+                    document.getElementById('level3Commission').value = commissions.levels?.[2] || 0;
+                    document.getElementById('level4Commission').value = commissions.levels?.[3] || 0;
+                    document.getElementById('level5Commission').value = commissions.levels?.[4] || 0;
+                    document.getElementById('tradingPool').value = commissions.tradingPool || 0;
+                }
+                
+                // Load package settings
+                const packagesSnapshot = await get(ref(database, 'settings/packages'));
+                if (packagesSnapshot.exists()) {
+                    const packages = packagesSnapshot.val();
+                    document.getElementById('starterPackage').value = packages.starter?.amount || 0;
+                    document.getElementById('starterReturn').value = packages.starter?.return || 0;
+                    document.getElementById('standardPackage').value = packages.standard?.amount || 0;
+                    document.getElementById('standardReturn').value = packages.standard?.return || 0;
+                    document.getElementById('premiumPackage').value = packages.premium?.amount || 0;
+                    document.getElementById('premiumReturn').value = packages.premium?.return || 0;
+                }
+                
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                showToast('Error loading settings', 'error');
+            }
+        }
+
+        // Display user details
+        function displayUserDetails(user) {
+            document.getElementById('adminUserId').value = user.uid || '';
+            document.getElementById('adminUserName').value = user.name || '';
+            document.getElementById('adminUserEmail').value = user.email || '';
+            document.getElementById('adminUserJoinDate').value = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A';
+            document.getElementById('adminUserBalance').value = user.balance || 0;
+            document.getElementById('adminUserProfit').value = user.tradingProfit || 0;
+            document.getElementById('adminUserReferral').value = user.referralEarnings || 0;
+            document.getElementById('adminUserTeam').value = user.teamEarnings || 0;
+            
+            // Show user details card
+            document.getElementById('userDetailsCard').style.display = 'block';
+            
+            // Scroll to details
+            document.getElementById('userDetailsCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Count active packages
+        async function countActivePackages() {
+            try {
+                const snapshot = await get(ref(database, 'invoices'));
+                if (!snapshot.exists()) return 0;
+                
+                const invoices = snapshot.val();
+                return Object.values(invoices).filter(inv => inv.status === 'active').length;
+            } catch (error) {
+                console.error('Error counting active packages:', error);
+                return 0;
+            }
+        }
+
+        // Get value from database
+        async function getValue(path) {
+            const snapshot = await get(ref(database, path));
+            return snapshot.val() || 0;
+        }
+
+        // Logout user
+        async function logoutUser() {
+            try {
+                await signOut(auth);
+                showToast('Logged out successfully', 'success');
+                window.location.href = 'login.html';
+            } catch (error) {
+                showToast('Error logging out: ' + error.message, 'error');
+            }
+        }
+
+        // Show login modal
         function showLoginModal() {
             document.getElementById('loginModal').style.display = 'flex';
             document.getElementById('adminContent').style.display = 'none';
@@ -218,6 +1690,7 @@
             document.getElementById('userProfile').style.display = 'none';
         }
 
+        // Show toast notification
         function showToast(message, type) {
             const toastContainer = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -229,21 +1702,16 @@
             
             toastContainer.appendChild(toast);
             
+            // Auto remove after 5 seconds
             setTimeout(() => {
                 toast.remove();
             }, 5000);
             
+            // Close button
             toast.querySelector('.toast-close').addEventListener('click', () => {
                 toast.remove();
             });
         }
-
-        // All your existing admin panel functions remain the same
-        async function loadAdminData() {
-            // Your existing dashboard loading logic
-        }
-
-        // Other functions...
     </script>
 </body>
 </html>
