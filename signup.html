@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Same CSS as login page */
         :root {
             --primary-color: #4361ee;
             --primary-light: #e6e9ff;
@@ -220,7 +219,7 @@
                 </div>
                 <div class="form-group">
                     <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" class="form-control" placeholder="123@rkve858810" required>
+                    <input type="password" id="signupPassword" class="form-control" placeholder="Enter strong password" required>
                 </div>
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password</label>
@@ -244,7 +243,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
         import { 
             getAuth, 
-            createUserWithEmailAndPassword 
+            createUserWithEmailAndPassword,
+            signOut
         } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -298,6 +298,10 @@
                     
                     // Create user in Firebase
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    
+                    // Immediately sign out the user after creation
+                    await signOut(auth);
+                    
                     showToast('Account created successfully! Redirecting to login...', 'success');
                     
                     // Redirect to login page after 2 seconds
@@ -310,7 +314,7 @@
                     
                     // Firebase specific errors
                     if (error.code === 'auth/email-already-in-use') {
-                        errorMessage = 'This email is already registered';
+                        errorMessage = 'This email is already registered. Please login instead.';
                     } else if (error.code === 'auth/invalid-email') {
                         errorMessage = 'Invalid email address';
                     } else if (error.code === 'auth/weak-password') {
