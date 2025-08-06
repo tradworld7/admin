@@ -192,6 +192,55 @@
             border-radius: 3px;
         }
 
+        /* Financial Summary */
+        .financial-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .financial-card {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+        }
+
+        .financial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .financial-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .financial-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .financial-profit {
+            color: var(--success-color);
+        }
+
+        .financial-loss {
+            color: var(--danger-color);
+        }
+
+        .financial-details {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
         /* Table Styles */
         .table-responsive {
             overflow-x: auto;
@@ -272,6 +321,15 @@
             font-size: 0.8rem;
         }
 
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
         .btn-success {
             background-color: var(--success-color);
             color: var(--white-color);
@@ -344,6 +402,58 @@
 
         .tab-content.active {
             display: block;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .settings-panel.active {
+            display: block;
+        }
+
+        .settings-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .settings-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .settings-hint {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            margin-top: 0.5rem;
         }
 
         /* Toast Notifications Container */
@@ -443,7 +553,8 @@
         }
 
         @media (max-width: 768px) {
-            .stats-cards {
+            .stats-cards,
+            .financial-summary {
                 grid-template-columns: 1fr 1fr;
             }
             
@@ -465,7 +576,8 @@
                 font-size: 1.3rem;
             }
 
-            .stats-cards {
+            .stats-cards,
+            .financial-summary {
                 grid-template-columns: 1fr;
             }
 
@@ -501,7 +613,7 @@
             <li><a href="#deposits"><i class="fas fa-money-bill-wave"></i> Deposit Requests</a></li>
             <li><a href="#withdrawals"><i class="fas fa-wallet"></i> Withdrawal Requests</a></li>
             <li><a href="#users"><i class="fas fa-users"></i> All Users</a></li>
-            <li><a href="#transactions"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+            <li><a href="#financial"><i class="fas fa-chart-pie"></i> Financial Summary</a></li>
             <li><a href="#settings"><i class="fas fa-cog"></i> Settings</a></li>
         </ul>
     </aside>
@@ -518,8 +630,8 @@
             </div>
             
             <div class="stat-card">
-                <div class="stat-value" id="totalDeposits">$0</div>
-                <div class="stat-label">Total Deposits</div>
+                <div class="stat-value" id="pendingDeposits">0</div>
+                <div class="stat-label">Pending Deposits</div>
             </div>
             
             <div class="stat-card">
@@ -530,6 +642,38 @@
             <div class="stat-card">
                 <div class="stat-value" id="todayTransactions">0</div>
                 <div class="stat-label">Today's Transactions</div>
+            </div>
+        </div>
+        
+        <!-- Financial Summary Section -->
+        <h2 class="section-title" id="financial">Financial Summary</h2>
+        
+        <div class="financial-summary">
+            <div class="financial-card">
+                <div class="financial-header">
+                    <div class="financial-title">Total Deposits</div>
+                    <i class="fas fa-money-bill-wave" style="color: var(--success-color);"></i>
+                </div>
+                <div class="financial-value" id="systemTotalDeposits">$0.00</div>
+                <div class="financial-details">All time deposits across the system</div>
+            </div>
+            
+            <div class="financial-card">
+                <div class="financial-header">
+                    <div class="financial-title">Total Withdrawals</div>
+                    <i class="fas fa-wallet" style="color: var(--danger-color);"></i>
+                </div>
+                <div class="financial-value" id="systemTotalWithdrawals">$0.00</div>
+                <div class="financial-details">All time withdrawals across the system</div>
+            </div>
+            
+            <div class="financial-card">
+                <div class="financial-header">
+                    <div class="financial-title">System Profit</div>
+                    <i class="fas fa-chart-line" style="color: var(--primary-color);"></i>
+                </div>
+                <div class="financial-value" id="systemProfit">$0.00</div>
+                <div class="financial-details">Net profit after all distributions</div>
             </div>
         </div>
         
@@ -713,6 +857,75 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <h2 class="section-title" id="settings">System Settings</h2>
+            
+            <form id="settingsForm">
+                <div class="settings-form">
+                    <div class="settings-group">
+                        <h3 class="financial-title">Commission Settings</h3>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Admin Commission (%)</label>
+                            <input type="number" class="settings-input" id="adminCommission" min="0" max="100" step="0.1" required>
+                            <div class="settings-hint">Percentage of each deposit that goes to admin</div>
+                        </div>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Direct Referral Commission (%)</label>
+                            <input type="number" class="settings-input" id="directCommission" min="0" max="100" step="0.1" required>
+                            <div class="settings-hint">Percentage for direct referrals</div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3 class="financial-title">Level Commissions</h3>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Level 1 Commission (%)</label>
+                            <input type="number" class="settings-input" id="level1Commission" min="0" max="100" step="0.1" required>
+                        </div>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Level 2 Commission (%)</label>
+                            <input type="number" class="settings-input" id="level2Commission" min="0" max="100" step="0.1" required>
+                        </div>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Level 3 Commission (%)</label>
+                            <input type="number" class="settings-input" id="level3Commission" min="0" max="100" step="0.1" required>
+                        </div>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Level 4 Commission (%)</label>
+                            <input type="number" class="settings-input" id="level4Commission" min="0" max="100" step="0.1" required>
+                        </div>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Level 5 Commission (%)</label>
+                            <input type="number" class="settings-input" id="level5Commission" min="0" max="100" step="0.1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3 class="financial-title">Profit Distribution</h3>
+                        
+                        <div class="settings-group">
+                            <label class="settings-label">Trading Profit Pool (%)</label>
+                            <input type="number" class="settings-input" id="tradingProfitPool" min="0" max="100" step="0.1" required>
+                            <div class="settings-hint">Percentage of deposits distributed to active traders</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="saveSettingsBtn">
+                    <span id="saveSettingsBtnText">Save Settings</span>
+                    <span id="saveSettingsSpinner" class="spinner" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
     </main>
 
     <!-- Toast Notifications Container -->
@@ -790,6 +1003,11 @@
             return '$' + parseFloat(amount).toFixed(2);
         }
 
+        // Calculate profit
+        function calculateProfit(deposits, withdrawals) {
+            return deposits - withdrawals;
+        }
+
         // Initialize tabs
         function initTabs() {
             const tabs = document.querySelectorAll('.tab');
@@ -808,6 +1026,127 @@
             });
         }
 
+        // Load financial summary
+        async function loadFinancialSummary() {
+            try {
+                // Get all deposits
+                const depositsSnapshot = await get(ref(database, 'deposits'));
+                let totalDeposits = 0;
+                
+                if (depositsSnapshot.exists()) {
+                    const deposits = depositsSnapshot.val();
+                    Object.values(deposits).forEach(deposit => {
+                        if (deposit.status === 'approved') {
+                            totalDeposits += deposit.amount || 0;
+                        }
+                    });
+                }
+                
+                // Get all withdrawals
+                const withdrawalsSnapshot = await get(ref(database, 'withdrawals'));
+                let totalWithdrawals = 0;
+                
+                if (withdrawalsSnapshot.exists()) {
+                    const withdrawals = withdrawalsSnapshot.val();
+                    Object.values(withdrawals).forEach(withdrawal => {
+                        if (withdrawal.status === 'approved') {
+                            totalWithdrawals += withdrawal.amount || 0;
+                        }
+                    });
+                }
+                
+                // Calculate profit
+                const profit = calculateProfit(totalDeposits, totalWithdrawals);
+                
+                // Update UI
+                document.getElementById('systemTotalDeposits').textContent = formatCurrency(totalDeposits);
+                document.getElementById('systemTotalWithdrawals').textContent = formatCurrency(totalWithdrawals);
+                document.getElementById('systemProfit').textContent = formatCurrency(profit);
+                
+                // Add profit class based on value
+                const profitElement = document.getElementById('systemProfit');
+                profitElement.classList.remove('financial-profit', 'financial-loss');
+                
+                if (profit >= 0) {
+                    profitElement.classList.add('financial-profit');
+                } else {
+                    profitElement.classList.add('financial-loss');
+                }
+                
+            } catch (error) {
+                console.error("Error loading financial summary:", error);
+                showToast('Error loading financial data', 'error');
+            }
+        }
+
+        // Load system settings
+        async function loadSystemSettings() {
+            try {
+                const settingsSnapshot = await get(ref(database, 'system/settings'));
+                
+                if (settingsSnapshot.exists()) {
+                    const settings = settingsSnapshot.val();
+                    
+                    // Update form fields
+                    document.getElementById('adminCommission').value = settings.adminCommission || 0;
+                    document.getElementById('directCommission').value = settings.directCommission || 0;
+                    document.getElementById('level1Commission').value = settings.levelCommissions?.level1 || 0;
+                    document.getElementById('level2Commission').value = settings.levelCommissions?.level2 || 0;
+                    document.getElementById('level3Commission').value = settings.levelCommissions?.level3 || 0;
+                    document.getElementById('level4Commission').value = settings.levelCommissions?.level4 || 0;
+                    document.getElementById('level5Commission').value = settings.levelCommissions?.level5 || 0;
+                    document.getElementById('tradingProfitPool').value = settings.tradingProfitPool || 0;
+                }
+                
+            } catch (error) {
+                console.error("Error loading settings:", error);
+                showToast('Error loading system settings', 'error');
+            }
+        }
+
+        // Save system settings
+        async function saveSystemSettings(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('saveSettingsBtn');
+            const btnText = document.getElementById('saveSettingsBtnText');
+            const spinner = document.getElementById('saveSettingsSpinner');
+            
+            btn.disabled = true;
+            btnText.textContent = 'Saving...';
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const settings = {
+                    adminCommission: parseFloat(document.getElementById('adminCommission').value),
+                    directCommission: parseFloat(document.getElementById('directCommission').value),
+                    levelCommissions: {
+                        level1: parseFloat(document.getElementById('level1Commission').value),
+                        level2: parseFloat(document.getElementById('level2Commission').value),
+                        level3: parseFloat(document.getElementById('level3Commission').value),
+                        level4: parseFloat(document.getElementById('level4Commission').value),
+                        level5: parseFloat(document.getElementById('level5Commission').value)
+                    },
+                    tradingProfitPool: parseFloat(document.getElementById('tradingProfitPool').value),
+                    updatedAt: Date.now()
+                };
+                
+                await update(ref(database, 'system'), {
+                    settings: settings
+                });
+                
+                showToast('Settings saved successfully!', 'success');
+                
+            } catch (error) {
+                console.error("Error saving settings:", error);
+                showToast('Failed to save settings', 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Save Settings';
+                spinner.style.display = 'none';
+            }
+        }
+
         // Load deposit requests
         function loadDepositRequests() {
             const depositsRef = ref(database, 'deposits');
@@ -822,7 +1161,7 @@
                 approvedTbody.innerHTML = '';
                 rejectedTbody.innerHTML = '';
                 
-                let totalDeposits = 0;
+                let pendingCount = 0;
                 let todayCount = 0;
                 const today = new Date().toDateString();
                 
@@ -839,7 +1178,6 @@
                 
                 // Process all deposits
                 depositsArray.forEach(deposit => {
-                    totalDeposits += deposit.amount || 0;
                     const depositDate = new Date(deposit.timestamp).toDateString();
                     if (depositDate === today) {
                         todayCount++;
@@ -848,6 +1186,7 @@
                     const row = document.createElement('tr');
                     
                     if (deposit.status === 'pending') {
+                        pendingCount++;
                         row.innerHTML = `
                             <td>${formatDate(deposit.timestamp)}</td>
                             <td>${deposit.userId || 'N/A'}</td>
@@ -892,7 +1231,7 @@
                 });
                 
                 // Update stats
-                document.getElementById('totalDeposits').textContent = formatCurrency(totalDeposits);
+                document.getElementById('pendingDeposits').textContent = pendingCount;
                 document.getElementById('todayTransactions').textContent = todayCount;
                 
                 // Add event listeners to buttons
@@ -1145,12 +1484,15 @@
                 const userSnapshot = await get(ref(database, `users/${userId}/balance`));
                 const currentBalance = userSnapshot.exists() ? userSnapshot.val() : 0;
                 
-                // 3. Add to user's withdrawals total
+                // 3. Update user balance (deduct the withdrawal amount)
+                withdrawalUpdates[`users/${userId}/balance`] = currentBalance - amount;
+                
+                // 4. Add to user's withdrawals total
                 const withdrawalsSnapshot = await get(ref(database, `users/${userId}/withdrawals`));
                 const totalWithdrawals = withdrawalsSnapshot.exists() ? withdrawalsSnapshot.val() : 0;
                 withdrawalUpdates[`users/${userId}/withdrawals`] = totalWithdrawals + amount;
                 
-                // 4. Add transaction record
+                // 5. Add transaction record
                 const transactionId = `withdrawal_${withdrawalId}`;
                 withdrawalUpdates[`users/${userId}/transactions/${transactionId}`] = {
                     type: 'withdrawal',
@@ -1238,6 +1580,51 @@
             });
         }
 
+        // Handle sidebar navigation
+        function handleNavigation() {
+            const links = document.querySelectorAll('.sidebar-menu a');
+            
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    links.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    link.classList.add('active');
+                    
+                    // Get target section
+                    const targetId = link.getAttribute('href').substring(1);
+                    
+                    // Hide all sections
+                    document.querySelectorAll('.section-title').forEach(title => {
+                        title.parentElement.style.display = 'none';
+                    });
+                    
+                    // Show settings panel if needed
+                    if (targetId === 'settings') {
+                        document.getElementById('settingsPanel').classList.add('active');
+                    } else {
+                        document.getElementById('settingsPanel').classList.remove('active');
+                    }
+                    
+                    // Show target section
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.parentElement.style.display = 'block';
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Show dashboard by default
+            document.querySelector('.sidebar-menu a').click();
+        }
+
         // Initialize the admin panel
         document.addEventListener('DOMContentLoaded', function() {
             // Setup sidebar toggle
@@ -1248,10 +1635,18 @@
             // Initialize tabs
             initTabs();
             
+            // Handle navigation
+            handleNavigation();
+            
             // Load data
+            loadFinancialSummary();
             loadDepositRequests();
             loadWithdrawalRequests();
             loadAllUsers();
+            loadSystemSettings();
+            
+            // Setup settings form
+            document.getElementById('settingsForm').addEventListener('submit', saveSystemSettings);
         });
     </script>
 </body>
