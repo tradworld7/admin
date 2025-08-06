@@ -586,6 +586,15 @@
                 white-space: nowrap;
             }
         }
+
+        /* Additional styles for dashboard visibility */
+        .dashboard-section {
+            display: block;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -623,7 +632,7 @@
         <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
         
         <!-- Stats Cards -->
-        <div class="stats-cards">
+        <div class="stats-cards dashboard-section">
             <div class="stat-card">
                 <div class="stat-value" id="totalUsers">0</div>
                 <div class="stat-label">Total Users</div>
@@ -646,216 +655,224 @@
         </div>
         
         <!-- Financial Summary Section -->
-        <h2 class="section-title" id="financial">Financial Summary</h2>
-        
-        <div class="financial-summary">
-            <div class="financial-card">
-                <div class="financial-header">
-                    <div class="financial-title">Total Deposits</div>
-                    <i class="fas fa-money-bill-wave" style="color: var(--success-color);"></i>
-                </div>
-                <div class="financial-value" id="systemTotalDeposits">$0.00</div>
-                <div class="financial-details">All time deposits across the system</div>
-            </div>
+        <div class="dashboard-section">
+            <h2 class="section-title" id="financial">Financial Summary</h2>
             
-            <div class="financial-card">
-                <div class="financial-header">
-                    <div class="financial-title">Total Withdrawals</div>
-                    <i class="fas fa-wallet" style="color: var(--danger-color);"></i>
+            <div class="financial-summary">
+                <div class="financial-card">
+                    <div class="financial-header">
+                        <div class="financial-title">Total Deposits</div>
+                        <i class="fas fa-money-bill-wave" style="color: var(--success-color);"></i>
+                    </div>
+                    <div class="financial-value" id="systemTotalDeposits">$0.00</div>
+                    <div class="financial-details">All time deposits across the system</div>
                 </div>
-                <div class="financial-value" id="systemTotalWithdrawals">$0.00</div>
-                <div class="financial-details">All time withdrawals across the system</div>
-            </div>
-            
-            <div class="financial-card">
-                <div class="financial-header">
-                    <div class="financial-title">System Profit</div>
-                    <i class="fas fa-chart-line" style="color: var(--primary-color);"></i>
+                
+                <div class="financial-card">
+                    <div class="financial-header">
+                        <div class="financial-title">Total Withdrawals</div>
+                        <i class="fas fa-wallet" style="color: var(--danger-color);"></i>
+                    </div>
+                    <div class="financial-value" id="systemTotalWithdrawals">$0.00</div>
+                    <div class="financial-details">All time withdrawals across the system</div>
                 </div>
-                <div class="financial-value" id="systemProfit">$0.00</div>
-                <div class="financial-details">Net profit after all distributions</div>
+                
+                <div class="financial-card">
+                    <div class="financial-header">
+                        <div class="financial-title">System Profit</div>
+                        <i class="fas fa-chart-line" style="color: var(--primary-color);"></i>
+                    </div>
+                    <div class="financial-value" id="systemProfit">$0.00</div>
+                    <div class="financial-details">Net profit after all distributions</div>
+                </div>
             </div>
         </div>
         
         <!-- Deposit Requests Section -->
-        <h2 class="section-title" id="deposits">Deposit Requests</h2>
-        
-        <div class="tabs">
-            <div class="tab active" data-tab="pending-deposits">Pending</div>
-            <div class="tab" data-tab="approved-deposits">Approved</div>
-            <div class="tab" data-tab="rejected-deposits">Rejected</div>
-        </div>
-        
-        <div class="tab-content active" id="pending-deposits">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Payment Method</th>
-                            <th>Transaction ID</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pendingDepositRequests">
-                        <tr>
-                            <td colspan="8" class="text-center">Loading deposit requests...</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="dashboard-section" style="display:none;">
+            <h2 class="section-title" id="deposits">Deposit Requests</h2>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="pending-deposits">Pending</div>
+                <div class="tab" data-tab="approved-deposits">Approved</div>
+                <div class="tab" data-tab="rejected-deposits">Rejected</div>
             </div>
-        </div>
-        
-        <div class="tab-content" id="approved-deposits">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Approved At</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="approvedDepositRequests">
-                        <tr>
-                            <td colspan="6" class="text-center">Loading approved deposits...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            <div class="tab-content active" id="pending-deposits">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Transaction ID</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingDepositRequests">
+                            <tr>
+                                <td colspan="8" class="text-center">Loading deposit requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        
-        <div class="tab-content" id="rejected-deposits">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Rejected At</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rejectedDepositRequests">
-                        <tr>
-                            <td colspan="6" class="text-center">Loading rejected deposits...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            <div class="tab-content" id="approved-deposits">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Approved At</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approvedDepositRequests">
+                            <tr>
+                                <td colspan="6" class="text-center">Loading approved deposits...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="rejected-deposits">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Rejected At</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rejectedDepositRequests">
+                            <tr>
+                                <td colspan="6" class="text-center">Loading rejected deposits...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         
         <!-- Withdrawal Requests Section -->
-        <h2 class="section-title" id="withdrawals">Withdrawal Requests</h2>
-        
-        <div class="tabs">
-            <div class="tab active" data-tab="pending-withdrawals">Pending</div>
-            <div class="tab" data-tab="approved-withdrawals">Approved</div>
-            <div class="tab" data-tab="rejected-withdrawals">Rejected</div>
-        </div>
-        
-        <div class="tab-content active" id="pending-withdrawals">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Wallet Address</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pendingWithdrawalRequests">
-                        <tr>
-                            <td colspan="7" class="text-center">Loading withdrawal requests...</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="dashboard-section" style="display:none;">
+            <h2 class="section-title" id="withdrawals">Withdrawal Requests</h2>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="pending-withdrawals">Pending</div>
+                <div class="tab" data-tab="approved-withdrawals">Approved</div>
+                <div class="tab" data-tab="rejected-withdrawals">Rejected</div>
             </div>
-        </div>
-        
-        <div class="tab-content" id="approved-withdrawals">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Wallet Address</th>
-                            <th>Approved At</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="approvedWithdrawalRequests">
-                        <tr>
-                            <td colspan="7" class="text-center">Loading approved withdrawals...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            <div class="tab-content active" id="pending-withdrawals">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Wallet Address</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingWithdrawalRequests">
+                            <tr>
+                                <td colspan="7" class="text-center">Loading withdrawal requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        
-        <div class="tab-content" id="rejected-withdrawals">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Wallet Address</th>
-                            <th>Rejected At</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rejectedWithdrawalRequests">
-                        <tr>
-                            <td colspan="7" class="text-center">Loading rejected withdrawals...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            <div class="tab-content" id="approved-withdrawals">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Wallet Address</th>
+                                <th>Approved At</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approvedWithdrawalRequests">
+                            <tr>
+                                <td colspan="7" class="text-center">Loading approved withdrawals...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="rejected-withdrawals">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Wallet Address</th>
+                                <th>Rejected At</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rejectedWithdrawalRequests">
+                            <tr>
+                                <td colspan="7" class="text-center">Loading rejected withdrawals...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         
         <!-- All Users Section -->
-        <h2 class="section-title" id="users">All Users</h2>
-        
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Mobile</th>
-                        <th>Balance</th>
-                        <th>Total Deposits</th>
-                        <th>Total Withdrawals</th>
-                        <th>Join Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="allUsers">
-                    <tr>
-                        <td colspan="9" class="text-center">Loading users...</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="dashboard-section" style="display:none;">
+            <h2 class="section-title" id="users">All Users</h2>
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                            <th>Balance</th>
+                            <th>Total Deposits</th>
+                            <th>Total Withdrawals</th>
+                            <th>Join Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allUsers">
+                        <tr>
+                            <td colspan="9" class="text-center">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- Settings Panel -->
@@ -1597,9 +1614,9 @@
                     // Get target section
                     const targetId = link.getAttribute('href').substring(1);
                     
-                    // Hide all sections
-                    document.querySelectorAll('.section-title').forEach(title => {
-                        title.parentElement.style.display = 'none';
+                    // Hide all dashboard sections
+                    document.querySelectorAll('.dashboard-section').forEach(section => {
+                        section.style.display = 'none';
                     });
                     
                     // Show settings panel if needed
@@ -1610,19 +1627,35 @@
                     }
                     
                     // Show target section
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.parentElement.style.display = 'block';
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 100,
-                            behavior: 'smooth'
+                    if (targetId === '') {
+                        // Show dashboard sections
+                        document.querySelectorAll('.dashboard-section').forEach((section, index) => {
+                            if (index < 2) { // Show stats and financial summary by default
+                                section.style.display = 'block';
+                            }
                         });
+                    } else {
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            targetElement.parentElement.style.display = 'block';
+                        }
+                    }
+                    
+                    // Scroll to top if dashboard
+                    if (targetId === '') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        // Scroll to section
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 100,
+                                behavior: 'smooth'
+                            });
+                        }
                     }
                 });
             });
-            
-            // Show dashboard by default
-            document.querySelector('.sidebar-menu a').click();
         }
 
         // Initialize the admin panel
@@ -1647,6 +1680,9 @@
             
             // Setup settings form
             document.getElementById('settingsForm').addEventListener('submit', saveSystemSettings);
+            
+            // Show dashboard by default
+            document.querySelector('.sidebar-menu a.active').click();
         });
     </script>
 </body>
