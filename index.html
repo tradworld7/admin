@@ -1141,23 +1141,76 @@
 
         // Load financial summary
         async function loadFinancialSummary() {
-            try {
-                // Get all deposits
-                const depositsSnapshot = await get(ref(database, 'deposits'));
-                let totalDeposits = 0;
-                let todayDeposits = 0;
-                let todayPackages = 0;
-                
-                if (depositsSnapshot.exists()) {
-                    const deposits = depositsSnapshot.val();
-                    Object.values(deposits).forEach(deposit => {
-                        if (deposit.status === 'approved') {
-                            totalDeposits += deposit.amount || 0;
-                            if (isToday(deposit.timestamp)) {
-                                todayDeposits += deposit.amount || 0;
-                                todayPackages++;
-                            }
-                        }
+    try {
+        const settingsSnapshot = await get(ref(database, 'system/settings'));
+        const settings = settingsSnapshot.exists() ? settingsSnapshot.val() : {};
+        const adminCommission = settings.adminCommission || 0;
+        const directCommission = settings.directCommission || 0;
+        const levelCom = settings.levelCommissions || {};
+        const level1Com = levelCom.level1 || 0;
+        const level2Com = levelCom.level2 || 0;
+        const level3Com = levelCom.level3 || 0;
+        const level4Com = levelCom.level4 || 0;
+        const level5Com = levelCom.level5 || 0;
+
+        // Get deposits
+        const depositsSnapshot = await get(ref(database, 'deposits'));
+        let totalDeposits = 0, todayDeposits = 0, todayPackages = 0, todayReferralProfit = 0;
+        if (depositsSnapshot.exists()) {
+            Object.values(depositsSnapshot.val()).forEach(dep => {
+                if (dep.status === 'approved') {
+                    totalDeposits += dep.amount || 0;
+                    if (isToday(dep.timestamp)) {
+                        todayDeposits += dep.amount || 0;
+                        todayPackages++;
+                        // Calculate commissions on today's deposits
+                        const totalCommission = 
+                            (dep.amount * adminCommission / 100) +
+                            (dep.amount * directCommission / 100) +
+                            (dep.amount * level1Com / 100) +
+                            (dep.amount * level2Com / 100) +
+                            (dep.amount * level3Com / 100) +
+                            (dep.amount * level4Com / 100) +
+                            (dep.amount * level5Com / 100);
+                        todayReferralProfit += totalCommission;
+                    }
+                }
+            });
+        }
+
+        // Get withdrawals
+        const withdrawalsSnapshot = await get(ref(database, 'withdrawals'));
+        let totalWithdrawals = 0, todayWithdrawals = 0;
+        if (withdrawalsSnapshot.exists()) {
+            Object.values(withdrawalsSnapshot.val()).forEach(wd => {
+                if (wd.status === 'approved') {
+                    totalWithdrawals += wd.amount || 0;
+                    if (isToday(wd.timestamp)) {
+                        todayWithdrawals += wd.amount || 0;
+                    }
+                }
+            });
+        }
+
+        // System profit (all time)
+        const systemProfit = totalDeposits - totalWithdrawals;
+
+        // Today's net profit after commissions
+        const todayNetProfit = (todayDeposits - todayReferralProfit) - todayWithdrawals;
+
+        // Update UI
+        document.getElementById('systemTotalDeposits').textContent = formatCurrency(totalDeposits);
+        document.getElementById('systemTotalWithdrawals').textContent = formatCurrency(totalWithdrawals);
+        document.getElementById('systemProfit').textContent = formatCurrency(systemProfit);
+        document.getElementById('todayDeposits').textContent = formatCurrency(todayDeposits);
+        document.getElementById('todayWithdrawals').textContent = formatCurrency(todayWithdrawals);
+        document.getElementById('todayPackages').textContent = todayPackages;
+        document.getElementById('todayProfit').textContent = formatCurrency(todayNetProfit);
+    } catch (err) {
+        console.error("Error loading financial summary:", err);
+        showToast('Error loading financial data', 'error');
+    }
+}
                     });
                 }
                 
@@ -1541,49 +1594,162 @@
         }
 
         // Approve deposit
-        async function approveDeposit(depositId, userId, amount) {
-            try {
-                // 1. Update deposit status to approved
-                const depositUpdates = {};
-                depositUpdates[`deposits/${depositId}/status`] = 'approved';
-                depositUpdates[`deposits/${depositId}/approvedAt`] = Date.now();
-                
-                // 2. Get user current balance
-                const userSnapshot = await get(ref(database, `users/${userId}/balance`));
-                const currentBalance = userSnapshot.exists() ? userSnapshot.val() : 0;
-                
-                // 3. Update user balance
-                depositUpdates[`users/${userId}/balance`] = currentBalance + amount;
-                
-                // 4. Add to user's deposits total
-                const depositsSnapshot = await get(ref(database, `users/${userId}/deposits`));
-                const totalDeposits = depositsSnapshot.exists() ? depositsSnapshot.val() : 0;
-                depositUpdates[`users/${userId}/deposits`] = totalDeposits + amount;
-                
-                // 5. Add transaction record
-                const transactionId = `deposit_${depositId}`;
-                depositUpdates[`users/${userId}/transactions/${transactionId}`] = {
-                    type: 'deposit',
-                    amount: amount,
-                    status: 'completed',
-                    timestamp: Date.now(),
-                    details: 'Deposit approved by admin'
-                };
-                
-                // Execute all updates
-                await update(ref(database), depositUpdates);
-                
-                showToast('Deposit approved successfully!', 'success');
-                return true;
-                
-            } catch (error) {
-                console.error('Error approving deposit:', error);
-                showToast('Failed to approve deposit', 'error');
-                return false;
-            }
+        
+// Approve deposit - enhanced: update user balance, distribute commissions up to 5 levels, update system stats
+async function approveDeposit(depositId, userId, amount) {
+    try {
+        const updates = {};
+        const now = Date.now();
+
+        // 1. Update deposit status to approved
+        updates[`deposits/${depositId}/status`] = 'approved';
+        updates[`deposits/${depositId}/approvedAt`] = now;
+
+        // 2. User balance update
+        const userBalanceSnap = await get(ref(database, `users/${userId}/balance`));
+        const currentBalance = userBalanceSnap.exists() ? parseFloat(userBalanceSnap.val()) : 0;
+        updates[`users/${userId}/balance`] = currentBalance + amount;
+
+        // 3. Add to user's deposits total
+        const userDepositsSnap = await get(ref(database, `users/${userId}/deposits`));
+        const totalDeposits = userDepositsSnap.exists() ? parseFloat(userDepositsSnap.val()) : 0;
+        updates[`users/${userId}/deposits`] = totalDeposits + amount;
+
+        // 4. Add transaction record for user deposit
+        const transactionId = `deposit_${depositId}`;
+        updates[`users/${userId}/transactions/${transactionId}`] = {
+            type: 'deposit',
+            amount: amount,
+            status: 'completed',
+            timestamp: now,
+            details: 'Deposit approved by admin'
+        };
+
+        // 5. Load commission settings
+        const settingsSnapshot = await get(ref(database, 'system/settings'));
+        const settings = settingsSnapshot.exists() ? settingsSnapshot.val() : {};
+        const adminCommission = parseFloat(settings.adminCommission || 0);
+        const directCommission = parseFloat(settings.directCommission || 0);
+        const levelCom = settings.levelCommissions || {};
+        const levelPercent = [
+            parseFloat(levelCom.level1 || 0),
+            parseFloat(levelCom.level2 || 0),
+            parseFloat(levelCom.level3 || 0),
+            parseFloat(levelCom.level4 || 0),
+            parseFloat(levelCom.level5 || 0)
+        ];
+        const tradingProfitPool = parseFloat(settings.tradingProfitPool || 0);
+
+        // 6. Distribute commissions
+        let totalCommissionsDistributed = 0;
+
+        // 6a. Admin commission
+        if (adminCommission > 0) {
+            const adminAmount = (amount * adminCommission) / 100;
+            totalCommissionsDistributed += adminAmount;
+
+            const adminBalanceSnap = await get(ref(database, `users/${ADMIN_ID}/balance`));
+            const adminBalance = adminBalanceSnap.exists() ? parseFloat(adminBalanceSnap.val()) : 0;
+            updates[`users/${ADMIN_ID}/balance`] = adminBalance + adminAmount;
+
+            // record admin transaction
+            updates[`users/${ADMIN_ID}/transactions/commission_admin_${depositId}`] = {
+                type: 'commission',
+                amount: adminAmount,
+                from: userId,
+                level: 'admin',
+                timestamp: now,
+                details: `Admin commission from deposit ${depositId}`
+            };
         }
 
-        // Reject deposit
+        // 6b. Direct referrer commission (level 0)
+        const userRefSnap = await get(ref(database, `users/${userId}/referrer`));
+        let refId = userRefSnap.exists() ? userRefSnap.val() : null;
+
+        if (directCommission > 0 && refId) {
+            const directAmount = (amount * directCommission) / 100;
+            totalCommissionsDistributed += directAmount;
+
+            const refBalanceSnap = await get(ref(database, `users/${refId}/balance`));
+            const refBalance = refBalanceSnap.exists() ? parseFloat(refBalanceSnap.val()) : 0;
+            updates[`users/${refId}/balance`] = refBalance + directAmount;
+
+            // add transaction record to referrer
+            updates[`users/${refId}/transactions/commission_direct_${depositId}`] = {
+                type: 'commission',
+                amount: directAmount,
+                from: userId,
+                level: 0,
+                timestamp: now,
+                details: `Direct commission from deposit ${depositId}`
+            };
+        }
+
+        // 6c. Upline levels 1..5 commissions
+        let currentRef = refId;
+        for (let lvl = 0; lvl < 5; lvl++) {
+            if (!currentRef) break;
+            // move up one level (the referrer's referrer)
+            const upSnap = await get(ref(database, `users/${currentRef}/referrer`));
+            const uplineId = upSnap.exists() ? upSnap.val() : null;
+            if (!uplineId) {
+                currentRef = null;
+                break;
+            }
+            const percent = levelPercent[lvl] || 0;
+            if (percent > 0) {
+                const lvlAmount = (amount * percent) / 100;
+                totalCommissionsDistributed += lvlAmount;
+
+                const upBalanceSnap = await get(ref(database, `users/${uplineId}/balance`));
+                const upBalance = upBalanceSnap.exists() ? parseFloat(upBalanceSnap.val()) : 0;
+                updates[`users/${uplineId}/balance`] = upBalance + lvlAmount;
+
+                updates[`users/${uplineId}/transactions/commission_level${lvl+1}_${depositId}`] = {
+                    type: 'commission',
+                    amount: lvlAmount,
+                    from: userId,
+                    level: lvl+1,
+                    timestamp: now,
+                    details: `Level ${lvl+1} commission from deposit ${depositId}`
+                };
+            }
+            // set currentRef to uplineId for next iteration
+            currentRef = uplineId;
+        }
+
+        // 7. Update system totals: totalCommissions and totalDepositsHandled
+        const systemTotalsSnap = await get(ref(database, `system/totals`));
+        const systemTotals = systemTotalsSnap.exists() ? systemTotalsSnap.val() : {};
+        const prevTotalCommissions = parseFloat(systemTotals.totalCommissions || 0);
+        const prevTotalDeposits = parseFloat(systemTotals.totalDeposits || 0);
+
+        updates[`system/totals/totalCommissions`] = prevTotalCommissions + totalCommissionsDistributed;
+        updates[`system/totals/totalDeposits`] = prevTotalDeposits + amount;
+
+        // 8. Optionally update system profit stored (we keep a running value)
+        const systemProfitSnap = await get(ref(database, `system/totals/systemProfit`));
+        const prevSystemProfit = systemProfitSnap.exists() ? parseFloat(systemProfitSnap.val()) : 0;
+        // system profit increases by (deposit - commissions) immediately (withdrawals will reduce it when processed)
+        const profitChange = (amount - totalCommissionsDistributed);
+        updates[`system/totals/systemProfit`] = prevSystemProfit + profitChange;
+
+        // 9. Execute all updates in one call
+        await update(ref(database), updates);
+
+        showToast('Deposit approved and commissions distributed!', 'success');
+        return true;
+
+    } catch (error) {
+        console.error('Error approving deposit:', error);
+        showToast('Failed to approve deposit', 'error');
+        return false;
+    }
+}
+
+
+// Reject deposit
         async function rejectDeposit(depositId) {
             try {
                 const updates = {};
