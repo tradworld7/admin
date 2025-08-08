@@ -595,6 +595,49 @@
         .text-center {
             text-align: center;
         }
+        
+        /* New styles for daily stats */
+        .daily-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .daily-stat-card {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+        }
+        
+        .daily-stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .daily-stat-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .daily-stat-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .daily-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .daily-stat-details {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
     </style>
 </head>
 <body>
@@ -651,6 +694,49 @@
             <div class="stat-card">
                 <div class="stat-value" id="todayTransactions">0</div>
                 <div class="stat-label">Today's Transactions</div>
+            </div>
+        </div>
+        
+        <!-- Daily Stats Section -->
+        <div class="dashboard-section">
+            <h2 class="section-title">Today's Statistics</h2>
+            
+            <div class="daily-stats">
+                <div class="daily-stat-card">
+                    <div class="daily-stat-header">
+                        <i class="fas fa-money-bill-wave daily-stat-icon"></i>
+                        <div class="daily-stat-title">Today's Deposits</div>
+                    </div>
+                    <div class="daily-stat-value" id="todayDeposits">$0.00</div>
+                    <div class="daily-stat-details">Total deposits made today</div>
+                </div>
+                
+                <div class="daily-stat-card">
+                    <div class="daily-stat-header">
+                        <i class="fas fa-wallet daily-stat-icon"></i>
+                        <div class="daily-stat-title">Today's Withdrawals</div>
+                    </div>
+                    <div class="daily-stat-value" id="todayWithdrawals">$0.00</div>
+                    <div class="daily-stat-details">Total withdrawals made today</div>
+                </div>
+                
+                <div class="daily-stat-card">
+                    <div class="daily-stat-header">
+                        <i class="fas fa-exchange-alt daily-stat-icon"></i>
+                        <div class="daily-stat-title">Today's Packages</div>
+                    </div>
+                    <div class="daily-stat-value" id="todayPackages">0</div>
+                    <div class="daily-stat-details">New packages purchased today</div>
+                </div>
+                
+                <div class="daily-stat-card">
+                    <div class="daily-stat-header">
+                        <i class="fas fa-chart-line daily-stat-icon"></i>
+                        <div class="daily-stat-title">Today's Profit</div>
+                    </div>
+                    <div class="daily-stat-value" id="todayProfit">$0.00</div>
+                    <div class="daily-stat-details">Net profit generated today</div>
+                </div>
             </div>
         </div>
         
@@ -1025,6 +1111,16 @@
             return deposits - withdrawals;
         }
 
+        // Check if date is today
+        function isToday(timestamp) {
+            if (!timestamp) return false;
+            const date = new Date(timestamp);
+            const today = new Date();
+            return date.getDate() === today.getDate() && 
+                   date.getMonth() === today.getMonth() && 
+                   date.getFullYear() === today.getFullYear();
+        }
+
         // Initialize tabs
         function initTabs() {
             const tabs = document.querySelectorAll('.tab');
@@ -1049,12 +1145,18 @@
                 // Get all deposits
                 const depositsSnapshot = await get(ref(database, 'deposits'));
                 let totalDeposits = 0;
+                let todayDeposits = 0;
+                let todayPackages = 0;
                 
                 if (depositsSnapshot.exists()) {
                     const deposits = depositsSnapshot.val();
                     Object.values(deposits).forEach(deposit => {
                         if (deposit.status === 'approved') {
                             totalDeposits += deposit.amount || 0;
+                            if (isToday(deposit.timestamp)) {
+                                todayDeposits += deposit.amount || 0;
+                                todayPackages++;
+                            }
                         }
                     });
                 }
@@ -1062,23 +1164,34 @@
                 // Get all withdrawals
                 const withdrawalsSnapshot = await get(ref(database, 'withdrawals'));
                 let totalWithdrawals = 0;
+                let todayWithdrawals = 0;
                 
                 if (withdrawalsSnapshot.exists()) {
                     const withdrawals = withdrawalsSnapshot.val();
                     Object.values(withdrawals).forEach(withdrawal => {
                         if (withdrawal.status === 'approved') {
                             totalWithdrawals += withdrawal.amount || 0;
+                            if (isToday(withdrawal.timestamp)) {
+                                todayWithdrawals += withdrawal.amount || 0;
+                            }
                         }
                     });
                 }
                 
                 // Calculate profit
                 const profit = calculateProfit(totalDeposits, totalWithdrawals);
+                const todayProfit = calculateProfit(todayDeposits, todayWithdrawals);
                 
                 // Update UI
                 document.getElementById('systemTotalDeposits').textContent = formatCurrency(totalDeposits);
                 document.getElementById('systemTotalWithdrawals').textContent = formatCurrency(totalWithdrawals);
                 document.getElementById('systemProfit').textContent = formatCurrency(profit);
+                
+                // Update today's stats
+                document.getElementById('todayDeposits').textContent = formatCurrency(todayDeposits);
+                document.getElementById('todayWithdrawals').textContent = formatCurrency(todayWithdrawals);
+                document.getElementById('todayPackages').textContent = todayPackages;
+                document.getElementById('todayProfit').textContent = formatCurrency(todayProfit);
                 
                 // Add profit class based on value
                 const profitElement = document.getElementById('systemProfit');
@@ -1630,7 +1743,7 @@
                     if (targetId === '') {
                         // Show dashboard sections
                         document.querySelectorAll('.dashboard-section').forEach((section, index) => {
-                            if (index < 2) { // Show stats and financial summary by default
+                            if (index < 3) { // Show stats, daily stats and financial summary by default
                                 section.style.display = 'block';
                             }
                         });
