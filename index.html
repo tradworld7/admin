@@ -873,13 +873,14 @@
                                 <th>Name</th>
                                 <th>Amount</th>
                                 <th>Wallet Address</th>
+                                <th>Type</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="pendingWithdrawalRequests">
                             <tr>
-                                <td colspan="7" class="text-center">Loading withdrawal requests...</td>
+                                <td colspan="8" class="text-center">Loading withdrawal requests...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -896,13 +897,14 @@
                                 <th>Name</th>
                                 <th>Amount</th>
                                 <th>Wallet Address</th>
+                                <th>Type</th>
                                 <th>Approved At</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="approvedWithdrawalRequests">
                             <tr>
-                                <td colspan="7" class="text-center">Loading approved withdrawals...</td>
+                                <td colspan="8" class="text-center">Loading approved withdrawals...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -919,13 +921,14 @@
                                 <th>Name</th>
                                 <th>Amount</th>
                                 <th>Wallet Address</th>
+                                <th>Type</th>
                                 <th>Rejected At</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="rejectedWithdrawalRequests">
                             <tr>
-                                <td colspan="7" class="text-center">Loading rejected withdrawals...</td>
+                                <td colspan="8" class="text-center">Loading rejected withdrawals...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -946,6 +949,8 @@
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>Balance</th>
+                            <th>Referral Earnings</th>
+                            <th>Trading Profit</th>
                             <th>Total Deposits</th>
                             <th>Total Withdrawals</th>
                             <th>Join Date</th>
@@ -954,7 +959,7 @@
                     </thead>
                     <tbody id="allUsers">
                         <tr>
-                            <td colspan="9" class="text-center">Loading users...</td>
+                            <td colspan="11" class="text-center">Loading users...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1429,9 +1434,9 @@
                 let pendingCount = 0;
                 
                 if (!withdrawals) {
-                    pendingTbody.innerHTML = '<tr><td colspan="7" class="text-center">No withdrawal requests found</td></tr>';
-                    approvedTbody.innerHTML = '<tr><td colspan="7" class="text-center">No approved withdrawals found</td></tr>';
-                    rejectedTbody.innerHTML = '<tr><td colspan="7" class="text-center">No rejected withdrawals found</td></tr>';
+                    pendingTbody.innerHTML = '<tr><td colspan="8" class="text-center">No withdrawal requests found</td></tr>';
+                    approvedTbody.innerHTML = '<tr><td colspan="8" class="text-center">No approved withdrawals found</td></tr>';
+                    rejectedTbody.innerHTML = '<tr><td colspan="8" class="text-center">No rejected withdrawals found</td></tr>';
                     return;
                 }
                 
@@ -1451,9 +1456,10 @@
                             <td>${withdrawal.userName || 'N/A'}</td>
                             <td>${formatCurrency(withdrawal.amount)}</td>
                             <td>${withdrawal.walletAddress || 'N/A'}</td>
+                            <td>${withdrawal.type || 'balance'}</td>
                             <td><span class="badge status-pending">Pending</span></td>
                             <td>
-                                <button class="btn btn-success btn-sm approve-withdrawal-btn" data-id="${withdrawal.id}" data-user="${withdrawal.userId}" data-amount="${withdrawal.amount}">
+                                <button class="btn btn-success btn-sm approve-withdrawal-btn" data-id="${withdrawal.id}" data-user="${withdrawal.userId}" data-amount="${withdrawal.amount}" data-type="${withdrawal.type || 'balance'}">
                                     <i class="fas fa-check"></i> Approve
                                 </button>
                                 <button class="btn btn-danger btn-sm reject-withdrawal-btn" data-id="${withdrawal.id}">
@@ -1470,6 +1476,7 @@
                             <td>${withdrawal.userName || 'N/A'}</td>
                             <td>${formatCurrency(withdrawal.amount)}</td>
                             <td>${withdrawal.walletAddress || 'N/A'}</td>
+                            <td>${withdrawal.type || 'balance'}</td>
                             <td>${formatDate(withdrawal.approvedAt)}</td>
                             <td><span class="badge status-completed">Approved</span></td>
                         `;
@@ -1482,6 +1489,7 @@
                             <td>${withdrawal.userName || 'N/A'}</td>
                             <td>${formatCurrency(withdrawal.amount)}</td>
                             <td>${withdrawal.walletAddress || 'N/A'}</td>
+                            <td>${withdrawal.type || 'balance'}</td>
                             <td>${formatDate(withdrawal.rejectedAt)}</td>
                             <td><span class="badge status-rejected">Rejected</span></td>
                         `;
@@ -1498,11 +1506,12 @@
                         const withdrawalId = btn.getAttribute('data-id');
                         const userId = btn.getAttribute('data-user');
                         const amount = parseFloat(btn.getAttribute('data-amount'));
+                        const type = btn.getAttribute('data-type');
                         
                         btn.disabled = true;
                         btn.innerHTML = '<span class="spinner"></span> Processing';
                         
-                        await approveWithdrawal(withdrawalId, userId, amount);
+                        await approveWithdrawal(withdrawalId, userId, amount, type);
                         
                         btn.disabled = false;
                         btn.innerHTML = '<i class="fas fa-check"></i> Approve';
@@ -1525,13 +1534,13 @@
                 
                 // Show empty messages if no records
                 if (pendingTbody.children.length === 0) {
-                    pendingTbody.innerHTML = '<tr><td colspan="7" class="text-center">No pending withdrawal requests</td></tr>';
+                    pendingTbody.innerHTML = '<tr><td colspan="8" class="text-center">No pending withdrawal requests</td></tr>';
                 }
                 if (approvedTbody.children.length === 0) {
-                    approvedTbody.innerHTML = '<tr><td colspan="7" class="text-center">No approved withdrawals</td></tr>';
+                    approvedTbody.innerHTML = '<tr><td colspan="8" class="text-center">No approved withdrawals</td></tr>';
                 }
                 if (rejectedTbody.children.length === 0) {
-                    rejectedTbody.innerHTML = '<tr><td colspan="7" class="text-center">No rejected withdrawals</td></tr>';
+                    rejectedTbody.innerHTML = '<tr><td colspan="8" class="text-center">No rejected withdrawals</td></tr>';
                 }
                 
             }, (error) => {
@@ -1603,29 +1612,57 @@
         }
 
         // Approve withdrawal
-        async function approveWithdrawal(withdrawalId, userId, amount) {
+        async function approveWithdrawal(withdrawalId, userId, amount, type = 'balance') {
             try {
-                // 1. Update withdrawal status to approved
-                const withdrawalUpdates = {};
-                withdrawalUpdates[`withdrawals/${withdrawalId}/status`] = 'approved';
-                withdrawalUpdates[`withdrawals/${withdrawalId}/approvedAt`] = Date.now();
+                // 1. Get user data first
+                const userSnapshot = await get(ref(database, `users/${userId}`));
+                const user = userSnapshot.exists() ? userSnapshot.val() : {};
                 
-                // 2. Get user current balance
-                const userSnapshot = await get(ref(database, `users/${userId}/balance`));
-                const currentBalance = userSnapshot.exists() ? userSnapshot.val() : 0;
+                // 2. Prepare updates object
+                const updates = {};
                 
-                // 3. Update user balance (deduct the withdrawal amount)
-                withdrawalUpdates[`users/${userId}/balance`] = currentBalance - amount;
+                // 3. Update withdrawal status to approved
+                updates[`withdrawals/${withdrawalId}/status`] = 'approved';
+                updates[`withdrawals/${withdrawalId}/approvedAt`] = Date.now();
                 
-                // 4. Add to user's withdrawals total
-                const withdrawalsSnapshot = await get(ref(database, `users/${userId}/withdrawals`));
-                const totalWithdrawals = withdrawalsSnapshot.exists() ? withdrawalsSnapshot.val() : 0;
-                withdrawalUpdates[`users/${userId}/withdrawals`] = totalWithdrawals + amount;
+                // 4. Handle different withdrawal types
+                if (type === 'referral') {
+                    // Deduct from referral earnings
+                    const currentReferralEarnings = user.referralEarnings || 0;
+                    if (currentReferralEarnings < amount) {
+                        showToast('Insufficient referral earnings for withdrawal', 'error');
+                        return false;
+                    }
+                    updates[`users/${userId}/referralEarnings`] = currentReferralEarnings - amount;
+                } 
+                else if (type === 'trading') {
+                    // Deduct from trading profits
+                    const currentTradingProfit = user.tradingProfit || 0;
+                    if (currentTradingProfit < amount) {
+                        showToast('Insufficient trading profits for withdrawal', 'error');
+                        return false;
+                    }
+                    updates[`users/${userId}/tradingProfit`] = currentTradingProfit - amount;
+                } 
+                else {
+                    // Default: deduct from main balance
+                    const currentBalance = user.balance || 0;
+                    if (currentBalance < amount) {
+                        showToast('Insufficient balance for withdrawal', 'error');
+                        return false;
+                    }
+                    updates[`users/${userId}/balance`] = currentBalance - amount;
+                }
                 
-                // 5. Add transaction record
+                // 5. Add to user's withdrawals total
+                const totalWithdrawals = user.withdrawals || 0;
+                updates[`users/${userId}/withdrawals`] = totalWithdrawals + amount;
+                
+                // 6. Add transaction record
                 const transactionId = `withdrawal_${withdrawalId}`;
-                withdrawalUpdates[`users/${userId}/transactions/${transactionId}`] = {
+                updates[`users/${userId}/transactions/${transactionId}`] = {
                     type: 'withdrawal',
+                    source: type,
                     amount: amount,
                     status: 'completed',
                     timestamp: Date.now(),
@@ -1633,7 +1670,7 @@
                 };
                 
                 // Execute all updates
-                await update(ref(database), withdrawalUpdates);
+                await update(ref(database), updates);
                 
                 showToast('Withdrawal approved successfully!', 'success');
                 return true;
@@ -1674,7 +1711,7 @@
                 tbody.innerHTML = '';
                 
                 if (!users) {
-                    tbody.innerHTML = '<tr><td colspan="9" class="text-center">No users found</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="11" class="text-center">No users found</td></tr>';
                     document.getElementById('totalUsers').textContent = '0';
                     return;
                 }
@@ -1695,6 +1732,8 @@
                         <td>${user.email || 'N/A'}</td>
                         <td>${user.mobileNumber || 'N/A'}</td>
                         <td>${formatCurrency(user.balance)}</td>
+                        <td>${formatCurrency(user.referralEarnings)}</td>
+                        <td>${formatCurrency(user.tradingProfit)}</td>
                         <td>${formatCurrency(user.deposits)}</td>
                         <td>${formatCurrency(user.withdrawals)}</td>
                         <td>${formatDate(user.joinDate)}</td>
