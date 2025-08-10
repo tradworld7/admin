@@ -1,4 +1,3 @@
-// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
 import { 
     getAuth, 
@@ -9,14 +8,12 @@ import {
     getDatabase, 
     ref, 
     onValue, 
-    set, 
-    update, 
+    update,
     push,
-    get,
-    remove
+    set,
+    get
 } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
 
-// Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBshAGZScyo7PJegLHMzORbkkrCLGD6U5s",
     authDomain: "mywebsite-600d3.firebaseapp.com",
@@ -28,334 +25,221 @@ const firebaseConfig = {
     measurementId: "G-GQ9J9QH42J"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
 // DOM Elements
-const adminSections = document.querySelectorAll('.admin-section');
-const adminMenuLinks = document.querySelectorAll('.admin-menu li a');
-const adminLogoutBtn = document.getElementById('adminLogout');
-const toastContainer = document.getElementById('adminToastContainer');
+const usersTableBody = document.getElementById('usersTableBody');
+const depositsTableBody = document.getElementById('depositsTableBody');
+const withdrawalsTableBody = document.getElementById('withdrawalsTableBody');
+const profitPercentageInput = document.getElementById('profitPercentage');
+const distributeProfitBtn = document.getElementById('distributeProfitBtn');
 
-// Admin Data
-let currentAdmin = null;
-let systemSettings = {};
-let usersData = [];
-let packagesData = [];
-let transactionsData = [];
+// Load all data
+function loadAllData() {
+    loadUsers();
+    loadDeposits();
+    loadWithdrawals();
+}
 
-// Initialize Admin Panel
+// Load users
+function loadUsers() {
+    const usersRef = ref(database, 'users');
+    
+    onValue(usersRef, (snapshot) => {
+        usersTableBody.innerHTML = '';
+        if (snapshot.exists()) {
+            const users = snapshot.val();
+            for (const userId in users) {
+                const user = users[userId];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${userId}</td>
+                    <td>${user.name || 'N/A'}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td>$${(user.balance || 0).toFixed(2)}</td>
+                    <td><span class="status-active">Active</span></td>
+                `;
+                usersTableBody.appendChild(row);
+            }
+        }
+    });
+}
+
+// Load deposit requests
+function loadDeposits() {
+    const depositsRef = ref(database, 'depositRequests');
+    
+    onValue(depositsRef, (snapshot) => {
+        depositsTableBody.innerHTML = '';
+        if (snapshot.exists()) {
+            const deposits = snapshot.val();
+            for (const depositId in deposits) {
+                const deposit = deposits[depositId];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${deposit.userId}</td>
+                    <td>${deposit.userName || 'N/A'}</td>
+                    <td>$${deposit.amount.toFixed(2)}</td>
+                    <td>${deposit.method || 'N/A'}</td>
+                    <td>${new Date(deposit.timestamp).toLocaleString()}</td>
+                    <td><span class="status-${deposit.status || 'pending'}">${deposit.status || 'Pending'}</span></td>
+                    <td>
+                        ${deposit.status === 'pending' ? `
+                        <button class="action-btn approve-btn" onclick="approveDeposit('${depositId}','${deposit.userId}',${deposit.amount})">Approve</button>
+                        <button class="action-btn reject-btn" onclick="rejectDeposit('${depositId}')">Reject</button>
+                        ` : 'Processed'}
+                    </td>
+                `;
+                depositsTableBody.appendChild(row);
+            }
+        }
+    });
+}
+
+// Load withdrawal requests
+function loadWithdrawals() {
+    const withdrawalsRef = ref(database, 'withdrawalRequests');
+    
+    onValue(withdrawalsRef, (snapshot) => {
+        withdrawalsTableBody.innerHTML = '';
+        if (snapshot.exists()) {
+            const withdrawals = snapshot.val();
+            for (const withdrawalId in withdrawals) {
+                const withdrawal = withdrawals[withdrawalId];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${withdrawal.userId}</td>
+                    <td>${withdrawal.userName || 'N/A'}</td>
+                    <td>$${withdrawal.amount.toFixed(2)}</td>
+                    <td>${withdrawal.walletAddress || 'N/A'}</td>
+                    <td>${new Date(withdrawal.timestamp).toLocaleString()}</td>
+                    <td><span class="status-${withdrawal.status || 'pending'}">${withdrawal.status || 'Pending'}</span></td>
+                    <td>
+                        ${withdrawal.status === 'pending' ? `
+                        <button class="action-btn approve-btn" onclick="approveWithdrawal('${withdrawalId}','${withdrawal.userId}',${withdrawal.amount})">Approve</button>
+                        <button class="action-btn reject-btn" onclick="rejectWithdrawal('${withdrawalId}')">Reject</button>
+                        ` : 'Processed'}
+                    </td>
+                `;
+                withdrawalsTableBody.appendChild(row);
+            }
+        }
+    });
+}
+
+// Approve deposit function
+window.approveDeposit = async function(depositId, userId, amount) {
+    try {
+        // Update deposit status
+        await update(ref(database, `depositRequests/${depositId}`), { 
+            status: 'approved',
+            processedAt: Date.now()
+        });
+        
+        // Update user balance
+        const userRef = ref(database, `users/${userId}`);
+        const userSnapshot = await get(userRef);
+        const currentBalance = userSnapshot.val().balance || 0;
+        await update(userRef, { 
+            balance: currentBalance + amount 
+        });
+        
+        alert('Deposit approved successfully!');
+    } catch (error) {
+        alert('Error approving deposit: ' + error.message);
+    }
+};
+
+// Approve withdrawal function
+window.approveWithdrawal = async function(withdrawalId, userId, amount) {
+    try {
+        // Update withdrawal status
+        await update(ref(database, `withdrawalRequests/${withdrawalId}`), { 
+            status: 'approved',
+            processedAt: Date.now()
+        });
+        
+        alert('Withdrawal approved successfully!');
+    } catch (error) {
+        alert('Error approving withdrawal: ' + error.message);
+    }
+};
+
+// Profit distribution function
+distributeProfitBtn.addEventListener('click', async () => {
+    const profitAmount = parseFloat(document.getElementById('profitAmount').value);
+    const profitPercentage = parseFloat(profitPercentageInput.value);
+    
+    if (!profitAmount || !profitPercentage) {
+        alert('Please enter both amount and percentage');
+        return;
+    }
+    
+    try {
+        // Get all users with investments
+        const usersRef = ref(database, 'users');
+        const snapshot = await get(usersRef);
+        
+        if (!snapshot.exists()) {
+            alert('No users found');
+            return;
+        }
+        
+        const users = snapshot.val();
+        const distributionResults = [];
+        const updates = {};
+        
+        // Calculate and distribute profit
+        for (const userId in users) {
+            const user = users[userId];
+            if (user.totalInvestment > 0) {
+                const profitShare = (profitAmount * (profitPercentage/100)) * (user.totalInvestment / 100);
+                
+                // Update user's trading profit
+                updates[`users/${userId}/tradingProfit`] = (user.tradingProfit || 0) + profitShare;
+                
+                // Add to results
+                distributionResults.push({
+                    userId,
+                    name: user.name,
+                    investment: user.totalInvestment,
+                    profit: profitShare.toFixed(2)
+                });
+            }
+        }
+        
+        // Execute all updates
+        await update(ref(database), updates);
+        
+        // Show results
+        const resultsHTML = distributionResults.map(result => `
+            <div class="user-profit-item">
+                <span>${result.userId} (${result.name || 'No Name'})</span>
+                <span>Investment: $${result.investment.toFixed(2)}</span>
+                <span>Profit: $${result.profit}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('distributionResults').innerHTML = `
+            <h3>Profit Distributed to ${distributionResults.length} Users</h3>
+            ${resultsHTML}
+        `;
+        
+        alert('Profit distributed successfully!');
+    } catch (error) {
+        alert('Error distributing profit: ' + error.message);
+    }
+});
+
+// Initialize admin panel
 document.addEventListener('DOMContentLoaded', () => {
-    // Check admin authentication
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            currentAdmin = user;
-            loadAdminData();
-            setupEventListeners();
+            loadAllData();
         } else {
-            // Redirect to login if not authenticated
             window.location.href = '../login.html';
         }
     });
 });
-
-function loadAdminData() {
-    // Load system settings
-    loadSystemSettings();
-    
-    // Load users data
-    loadUsersData();
-    
-    // Load packages data
-    loadPackagesData();
-    
-    // Load transactions data
-    loadTransactionsData();
-}
-
-function loadSystemSettings() {
-    const settingsRef = ref(database, 'system/settings');
-    
-    onValue(settingsRef, (snapshot) => {
-        if (snapshot.exists()) {
-            systemSettings = snapshot.val();
-            updateSettingsForm();
-            
-            // Update stats
-            document.getElementById('totalUsers').textContent = usersData.length;
-            document.getElementById('activePackages').textContent = packagesData.filter(pkg => pkg.status === 'active').length;
-            document.getElementById('totalTransactions').textContent = transactionsData.length;
-        }
-    });
-}
-
-function loadUsersData() {
-    const usersRef = ref(database, 'users');
-    
-    onValue(usersRef, (snapshot) => {
-        if (snapshot.exists()) {
-            usersData = Object.values(snapshot.val());
-            updateUsersTable();
-        }
-    });
-}
-
-function loadPackagesData() {
-    const packagesRef = ref(database, 'packages');
-    
-    onValue(packagesRef, (snapshot) => {
-        if (snapshot.exists()) {
-            packagesData = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
-            updatePackagesTable();
-        }
-    });
-}
-
-function loadTransactionsData() {
-    const transactionsRef = ref(database, 'transactions');
-    
-    onValue(transactionsRef, (snapshot) => {
-        if (snapshot.exists()) {
-            transactionsData = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
-            updateTransactionsTable();
-        }
-    });
-}
-
-function updateSettingsForm() {
-    document.getElementById('adminCommission').value = (systemSettings.adminCommission * 100) || 60;
-    document.getElementById('directCommission').value = (systemSettings.directCommission * 100) || 10;
-    
-    const levelInputs = document.querySelectorAll('.level-input');
-    levelInputs.forEach(input => {
-        const level = input.dataset.level;
-        input.value = (systemSettings.levelCommissions[level - 1] * 100) || 2;
-    });
-}
-
-function updateUsersTable() {
-    const tableBody = document.getElementById('usersTableBody');
-    tableBody.innerHTML = '';
-    
-    usersData.forEach(user => {
-        const row = document.createElement('tr');
-        
-        row.innerHTML = `
-            <td>${user.uid.substring(0, 8)}...</td>
-            <td>${user.name || 'N/A'}</td>
-            <td>${user.email || 'N/A'}</td>
-            <td>$${(user.balance || 0).toFixed(2)}</td>
-            <td><span class="badge status-active">Active</span></td>
-            <td>
-                <button class="btn btn-small" data-action="edit" data-user="${user.uid}">Edit</button>
-                <button class="btn btn-small btn-danger" data-action="delete" data-user="${user.uid}">Delete</button>
-            </td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
-}
-
-function updatePackagesTable() {
-    const tableBody = document.getElementById('packagesTableBody');
-    tableBody.innerHTML = '';
-    
-    packagesData.forEach(pkg => {
-        const row = document.createElement('tr');
-        
-        row.innerHTML = `
-            <td>${pkg.id.substring(0, 8)}...</td>
-            <td>${pkg.name}</td>
-            <td>$${pkg.amount}</td>
-            <td>${pkg.return}%</td>
-            <td><span class="badge status-${pkg.status || 'active'}">${pkg.status || 'Active'}</span></td>
-            <td>
-                <button class="btn btn-small" data-action="edit-pkg" data-pkg="${pkg.id}">Edit</button>
-                <button class="btn btn-small btn-danger" data-action="delete-pkg" data-pkg="${pkg.id}">Delete</button>
-            </td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
-}
-
-function updateTransactionsTable() {
-    const tableBody = document.getElementById('transactionsTableBody');
-    tableBody.innerHTML = '';
-    
-    transactionsData.slice(0, 50).forEach(tx => {
-        const row = document.createElement('tr');
-        
-        const date = new Date(tx.timestamp).toLocaleString();
-        
-        row.innerHTML = `
-            <td>${tx.id.substring(0, 8)}...</td>
-            <td>${tx.userId ? tx.userId.substring(0, 8) + '...' : 'System'}</td>
-            <td>${tx.type}</td>
-            <td>$${(tx.amount || 0).toFixed(2)}</td>
-            <td>${date}</td>
-            <td><span class="badge status-${tx.status || 'completed'}">${tx.status || 'Completed'}</span></td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
-}
-
-function setupEventListeners() {
-    // Admin menu navigation
-    adminMenuLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Remove active class from all links
-            adminMenuLinks.forEach(l => l.classList.remove('active'));
-            
-            // Add active class to clicked link
-            link.classList.add('active');
-            
-            // Hide all sections
-            adminSections.forEach(section => section.classList.remove('active'));
-            
-            // Show selected section
-            const sectionId = link.dataset.section + '-section';
-            document.getElementById(sectionId).classList.add('active');
-        });
-    });
-    
-    // Admin logout
-    adminLogoutBtn.addEventListener('click', () => {
-        signOut(auth).then(() => {
-            window.location.href = '../login.html';
-        }).catch(error => {
-            showToast('Logout failed: ' + error.message, 'error');
-        });
-    });
-    
-    // Add new package
-    document.getElementById('addPackageBtn').addEventListener('click', () => {
-        const name = document.getElementById('packageName').value.trim();
-        const amount = parseFloat(document.getElementById('packageAmount').value);
-        const returnPercent = parseFloat(document.getElementById('packageReturn').value);
-        
-        if (!name || !amount || !returnPercent) {
-            showToast('Please fill all package details', 'error');
-            return;
-        }
-        
-        const packageData = {
-            name,
-            amount,
-            return: returnPercent,
-            status: 'active',
-            createdAt: Date.now()
-        };
-        
-        const newPackageRef = push(ref(database, 'packages'));
-        set(newPackageRef, packageData)
-            .then(() => {
-                showToast('Package added successfully', 'success');
-                document.getElementById('packageName').value = '';
-                document.getElementById('packageAmount').value = '';
-                document.getElementById('packageReturn').value = '';
-            })
-            .catch(error => {
-                showToast('Failed to add package: ' + error.message, 'error');
-            });
-    });
-    
-    // Save settings
-    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-        const adminCommission = parseFloat(document.getElementById('adminCommission').value) / 100;
-        const directCommission = parseFloat(document.getElementById('directCommission').value) / 100;
-        
-        const levelCommissions = [];
-        document.querySelectorAll('.level-input').forEach(input => {
-            levelCommissions.push(parseFloat(input.value) / 100);
-        });
-        
-        const settings = {
-            adminCommission,
-            directCommission,
-            levelCommissions
-        };
-        
-        set(ref(database, 'system/settings'), settings)
-            .then(() => {
-                showToast('Settings saved successfully', 'success');
-            })
-            .catch(error => {
-                showToast('Failed to save settings: ' + error.message, 'error');
-            });
-    });
-    
-    // Users table actions
-    document.getElementById('usersTableBody').addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        
-        const action = btn.dataset.action;
-        const userId = btn.dataset.user;
-        
-        if (action === 'edit') {
-            // Edit user functionality
-            showToast('Edit user: ' + userId, 'warning');
-        } else if (action === 'delete') {
-            if (confirm('Are you sure you want to delete this user?')) {
-                remove(ref(database, `users/${userId}`))
-                    .then(() => {
-                        showToast('User deleted successfully', 'success');
-                    })
-                    .catch(error => {
-                        showToast('Failed to delete user: ' + error.message, 'error');
-                    });
-            }
-        }
-    });
-    
-    // Packages table actions
-    document.getElementById('packagesTableBody').addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        
-        const action = btn.dataset.action;
-        const pkgId = btn.dataset.pkg;
-        
-        if (action === 'edit-pkg') {
-            // Edit package functionality
-            showToast('Edit package: ' + pkgId, 'warning');
-        } else if (action === 'delete-pkg') {
-            if (confirm('Are you sure you want to delete this package?')) {
-                remove(ref(database, `packages/${pkgId}`))
-                    .then(() => {
-                        showToast('Package deleted successfully', 'success');
-                    })
-                    .catch(error => {
-                        showToast('Failed to delete package: ' + error.message, 'error');
-                    });
-            }
-        }
-    });
-}
-
-function showToast(message, type) {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <span>${message}</span>
-        <button class="toast-close">&times;</button>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        toast.remove();
-    }, 5000);
-    
-    // Close button
-    toast.querySelector('.toast-close').addEventListener('click', () => {
-        toast.remove();
-    });
-}
