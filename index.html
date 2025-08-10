@@ -25,9 +25,8 @@
         <ul class="admin-menu">
             <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
             <li><a href="#" data-section="users"><i class="fas fa-users"></i> Users</a></li>
-            <li><a href="#" data-section="deposits"><i class="fas fa-money-bill-wave"></i> Deposits</a></li>
-            <li><a href="#" data-section="withdrawals"><i class="fas fa-wallet"></i> Withdrawals</a></li>
-            <li><a href="#" data-section="profit"><i class="fas fa-chart-line"></i> Profit Distribution</a></li>
+            <li><a href="#" data-section="packages"><i class="fas fa-box-open"></i> Packages</a></li>
+            <li><a href="#" data-section="transactions"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
             <li><a href="#" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
         </ul>
     </aside>
@@ -38,7 +37,33 @@
         <section id="dashboard-section" class="admin-section active">
             <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
             <div class="admin-stats">
-                <!-- Stats cards same as before -->
+                <div class="stat-card">
+                    <div class="stat-icon total-users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Users</h3>
+                        <p id="totalUsers">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon active-packages">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Active Packages</h3>
+                        <p id="activePackages">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon total-transactions">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Transactions</h3>
+                        <p id="totalTransactions">0</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -54,87 +79,107 @@
                             <th>Email</th>
                             <th>Balance</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="usersTableBody">
-                        <!-- Users data will load here -->
+                        <!-- Users will be loaded here -->
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- Deposits Section -->
-        <section id="deposits-section" class="admin-section">
-            <h2><i class="fas fa-money-bill-wave"></i> Deposit Approvals</h2>
-            <div class="admin-table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Method</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="depositsTableBody">
-                        <!-- Deposits data will load here -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Withdrawals Section -->
-        <section id="withdrawals-section" class="admin-section">
-            <h2><i class="fas fa-wallet"></i> Withdrawal Approvals</h2>
-            <div class="admin-table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Wallet</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="withdrawalsTableBody">
-                        <!-- Withdrawals data will load here -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Profit Distribution Section -->
-        <section id="profit-section" class="admin-section">
-            <h2><i class="fas fa-chart-line"></i> Profit Distribution</h2>
+        <!-- Packages Section -->
+        <section id="packages-section" class="admin-section">
+            <h2><i class="fas fa-box-open"></i> Package Management</h2>
             <div class="admin-form">
+                <h3>Add New Package</h3>
                 <div class="form-group">
-                    <label for="profitAmount">Total Profit Amount ($)</label>
-                    <input type="number" id="profitAmount" placeholder="1000">
+                    <label for="packageName">Package Name</label>
+                    <input type="text" id="packageName" placeholder="Starter Package">
                 </div>
                 <div class="form-group">
-                    <label for="profitPercentage">Distribution Percentage (%)</label>
-                    <input type="number" id="profitPercentage" placeholder="20">
+                    <label for="packageAmount">Amount ($)</label>
+                    <input type="number" id="packageAmount" placeholder="10">
                 </div>
-                <button id="distributeProfitBtn" class="btn btn-primary">Distribute Profit</button>
+                <div class="form-group">
+                    <label for="packageReturn">Return Percentage</label>
+                    <input type="number" id="packageReturn" placeholder="100">
+                </div>
+                <button id="addPackageBtn" class="btn btn-primary">Add Package</button>
             </div>
             
-            <div class="distribution-results" id="distributionResults">
-                <!-- Results will show here -->
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Package ID</th>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Return</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="packagesTableBody">
+                        <!-- Packages will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Transactions Section -->
+        <section id="transactions-section" class="admin-section">
+            <h2><i class="fas fa-exchange-alt"></i> Transaction Management</h2>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>User ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody">
+                        <!-- Transactions will be loaded here -->
+                    </tbody>
+                </table>
             </div>
         </section>
 
         <!-- Settings Section -->
         <section id="settings-section" class="admin-section">
             <h2><i class="fas fa-cog"></i> System Settings</h2>
-            <!-- Settings form same as before -->
+            <div class="admin-form">
+                <h3>Commission Settings</h3>
+                <div class="form-group">
+                    <label for="adminCommission">Admin Commission (%)</label>
+                    <input type="number" id="adminCommission" placeholder="60">
+                </div>
+                <div class="form-group">
+                    <label for="directCommission">Direct Referral Commission (%)</label>
+                    <input type="number" id="directCommission" placeholder="10">
+                </div>
+                <div class="form-group">
+                    <label>Level Commissions (%)</label>
+                    <div class="level-commissions">
+                        <input type="number" class="level-input" placeholder="2" data-level="1">
+                        <input type="number" class="level-input" placeholder="2" data-level="2">
+                        <input type="number" class="level-input" placeholder="2" data-level="3">
+                        <input type="number" class="level-input" placeholder="2" data-level="4">
+                        <input type="number" class="level-input" placeholder="2" data-level="5">
+                    </div>
+                </div>
+                <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+            </div>
         </section>
     </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="adminToastContainer"></div>
 
     <script src="script.js" type="module"></script>
 </body>
