@@ -45,6 +45,8 @@ let systemSettings = {};
 let usersData = [];
 let packagesData = [];
 let transactionsData = [];
+let pendingDeposits = [];
+let pendingWithdrawals = [];
 
 // Initialize Admin Panel
 document.addEventListener('DOMContentLoaded', () => {
@@ -73,6 +75,10 @@ function loadAdminData() {
     
     // Load transactions data
     loadTransactionsData();
+    
+    // Load pending deposits and withdrawals
+    loadPendingDeposits();
+    loadPendingWithdrawals();
 }
 
 function loadSystemSettings() {
@@ -82,11 +88,7 @@ function loadSystemSettings() {
         if (snapshot.exists()) {
             systemSettings = snapshot.val();
             updateSettingsForm();
-            
-            // Update stats
-            document.getElementById('totalUsers').textContent = usersData.length;
-            document.getElementById('activePackages').textContent = packagesData.filter(pkg => pkg.status === 'active').length;
-            document.getElementById('totalTransactions').textContent = transactionsData.length;
+            updateStats();
         }
     });
 }
@@ -98,6 +100,7 @@ function loadUsersData() {
         if (snapshot.exists()) {
             usersData = Object.values(snapshot.val());
             updateUsersTable();
+            updateStats();
         }
     });
 }
@@ -109,6 +112,7 @@ function loadPackagesData() {
         if (snapshot.exists()) {
             packagesData = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
             updatePackagesTable();
+            updateStats();
         }
     });
 }
@@ -120,13 +124,54 @@ function loadTransactionsData() {
         if (snapshot.exists()) {
             transactionsData = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
             updateTransactionsTable();
+            updateStats();
         }
     });
+}
+
+function loadPendingDeposits() {
+    const depositsRef = ref(database, 'pendingDeposits');
+    
+    onValue(depositsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            pendingDeposits = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
+            updateTransactionsTable();
+            updateStats();
+        } else {
+            pendingDeposits = [];
+            updateTransactionsTable();
+            updateStats();
+        }
+    });
+}
+
+function loadPendingWithdrawals() {
+    const withdrawalsRef = ref(database, 'pendingWithdrawals');
+    
+    onValue(withdrawalsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            pendingWithdrawals = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
+            updateTransactionsTable();
+            updateStats();
+        } else {
+            pendingWithdrawals = [];
+            updateTransactionsTable();
+            updateStats();
+        }
+    });
+}
+
+function updateStats() {
+    document.getElementById('totalUsers').textContent = usersData.length;
+    document.getElementById('activePackages').textContent = packagesData.filter(pkg => pkg.status === 'active').length;
+    document.getElementById('totalTransactions').textContent = transactionsData.length;
+    document.getElementById('pendingActions').textContent = pendingDeposits.length + pendingWithdrawals.length;
 }
 
 function updateSettingsForm() {
     document.getElementById('adminCommission').value = (systemSettings.adminCommission * 100) || 60;
     document.getElementById('directCommission').value = (systemSettings.directCommission * 100) || 10;
+    document.getElementById('profitPercentage').value = (systemSettings.profitPercentage * 100) || 5;
     
     const levelInputs = document.querySelectorAll('.level-input');
     levelInputs.forEach(input => {
@@ -185,10 +230,21 @@ function updateTransactionsTable() {
     const tableBody = document.getElementById('transactionsTableBody');
     tableBody.innerHTML = '';
     
-    transactionsData.slice(0, 50).forEach(tx => {
+    // Combine all transactions and pending transactions
+    const allTransactions = [
+        ...transactionsData,
+        ...pendingDeposits.map(d => ({ ...d, type: 'deposit', status: 'pending' })),
+        ...pendingWithdrawals.map(w => ({ ...w, type: 'withdrawal', status: 'pending' }))
+    ];
+    
+    // Sort by timestamp (newest first)
+    allTransactions.sort((a, b) => (b.timestamp || b.createdAt) - (a.timestamp || a.createdAt));
+    
+    allTransactions.slice(0, 50).forEach(tx => {
         const row = document.createElement('tr');
         
-        const date = new Date(tx.timestamp).toLocaleString();
+        const date = new Date(tx.timestamp || tx.createdAt).toLocaleString();
+        const isPending = tx.status === 'pending';
         
         row.innerHTML = `
             <td>${tx.id.substring(0, 8)}...</td>
@@ -197,6 +253,12 @@ function updateTransactionsTable() {
             <td>$${(tx.amount || 0).toFixed(2)}</td>
             <td>${date}</td>
             <td><span class="badge status-${tx.status || 'completed'}">${tx.status || 'Completed'}</span></td>
+            <td>
+                ${isPending ? `
+                <button class="btn btn-small btn-success" data-action="approve" data-tx="${tx.id}" data-type="${tx.type}">Approve</button>
+                <button class="btn btn-small btn-danger" data-action="reject" data-tx="${tx.id}" data-type="${tx.type}">Reject</button>
+                ` : ''}
+            </td>
         `;
         
         tableBody.appendChild(row);
@@ -269,6 +331,7 @@ function setupEventListeners() {
     document.getElementById('saveSettingsBtn').addEventListener('click', () => {
         const adminCommission = parseFloat(document.getElementById('adminCommission').value) / 100;
         const directCommission = parseFloat(document.getElementById('directCommission').value) / 100;
+        const profitPercentage = parseFloat(document.getElementById('profitPercentage').value) / 100;
         
         const levelCommissions = [];
         document.querySelectorAll('.level-input').forEach(input => {
@@ -278,7 +341,8 @@ function setupEventListeners() {
         const settings = {
             adminCommission,
             directCommission,
-            levelCommissions
+            levelCommissions,
+            profitPercentage
         };
         
         set(ref(database, 'system/settings'), settings)
@@ -334,6 +398,125 @@ function setupEventListeners() {
                     .catch(error => {
                         showToast('Failed to delete package: ' + error.message, 'error');
                     });
+            }
+        }
+    });
+    
+    // Transactions table actions (approve/reject)
+    document.getElementById('transactionsTableBody').addEventListener('click', async (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        
+        const action = btn.dataset.action;
+        const txId = btn.dataset.tx;
+        const txType = btn.dataset.type;
+        
+        if (action === 'approve') {
+            if (txType === 'deposit') {
+                // Approve deposit
+                const depositRef = ref(database, `pendingDeposits/${txId}`);
+                const depositSnapshot = await get(depositRef);
+                
+                if (depositSnapshot.exists()) {
+                    const depositData = depositSnapshot.val();
+                    const userRef = ref(database, `users/${depositData.userId}`);
+                    
+                    // Add to transactions history
+                    const newTxRef = push(ref(database, 'transactions'));
+                    const txData = {
+                        userId: depositData.userId,
+                        amount: depositData.amount,
+                        type: 'deposit',
+                        status: 'completed',
+                        timestamp: Date.now()
+                    };
+                    
+                    // Update user balance and add transaction
+                    await set(newTxRef, txData);
+                    
+                    // Get current user balance
+                    const userSnapshot = await get(userRef);
+                    let currentBalance = 0;
+                    if (userSnapshot.exists()) {
+                        currentBalance = userSnapshot.val().balance || 0;
+                    }
+                    
+                    // Update user balance
+                    await update(userRef, {
+                        balance: currentBalance + depositData.amount
+                    });
+                    
+                    // Remove from pending deposits
+                    await remove(depositRef);
+                    
+                    showToast('Deposit approved successfully', 'success');
+                }
+            } else if (txType === 'withdrawal') {
+                // Approve withdrawal (no balance change needed as it was already deducted)
+                const withdrawalRef = ref(database, `pendingWithdrawals/${txId}`);
+                const withdrawalSnapshot = await get(withdrawalRef);
+                
+                if (withdrawalSnapshot.exists()) {
+                    const withdrawalData = withdrawalSnapshot.val();
+                    
+                    // Add to transactions history
+                    const newTxRef = push(ref(database, 'transactions'));
+                    const txData = {
+                        userId: withdrawalData.userId,
+                        amount: withdrawalData.amount,
+                        type: 'withdrawal',
+                        status: 'completed',
+                        timestamp: Date.now()
+                    };
+                    
+                    await set(newTxRef, txData);
+                    await remove(withdrawalRef);
+                    
+                    showToast('Withdrawal approved successfully', 'success');
+                }
+            }
+        } else if (action === 'reject') {
+            if (txType === 'deposit') {
+                // Reject deposit - just remove from pending
+                const depositRef = ref(database, `pendingDeposits/${txId}`);
+                await remove(depositRef);
+                showToast('Deposit rejected', 'success');
+            } else if (txType === 'withdrawal') {
+                // Reject withdrawal - return funds to user
+                const withdrawalRef = ref(database, `pendingWithdrawals/${txId}`);
+                const withdrawalSnapshot = await get(withdrawalRef);
+                
+                if (withdrawalSnapshot.exists()) {
+                    const withdrawalData = withdrawalSnapshot.val();
+                    const userRef = ref(database, `users/${withdrawalData.userId}`);
+                    
+                    // Get current user balance
+                    const userSnapshot = await get(userRef);
+                    let currentBalance = 0;
+                    if (userSnapshot.exists()) {
+                        currentBalance = userSnapshot.val().balance || 0;
+                    }
+                    
+                    // Return funds to user
+                    await update(userRef, {
+                        balance: currentBalance + withdrawalData.amount
+                    });
+                    
+                    // Add to transactions history
+                    const newTxRef = push(ref(database, 'transactions'));
+                    const txData = {
+                        userId: withdrawalData.userId,
+                        amount: withdrawalData.amount,
+                        type: 'withdrawal',
+                        status: 'rejected',
+                        timestamp: Date.now()
+                    };
+                    
+                    await set(newTxRef, txData);
+                    await remove(withdrawalRef);
+                    
+                    showToast('Withdrawal rejected and funds returned', 'success');
+                }
             }
         }
     });
