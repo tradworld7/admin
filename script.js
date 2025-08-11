@@ -41,9 +41,13 @@ const toastContainer = document.getElementById('adminToastContainer');
 
 // Admin Data
 let currentAdmin = null;
-let systemSettings = {};
+let systemSettings = {
+    adminCommission: 0.6,
+    directCommission: 0.1,
+    levelCommissions: [0.02, 0.02, 0.02, 0.02, 0.02],
+    profitPercentage: 0.2
+};
 let usersData = [];
-let packagesData = [];
 let transactionsData = [];
 let pendingDeposits = [];
 let pendingWithdrawals = [];
@@ -70,9 +74,6 @@ function loadAdminData() {
     // Load users data
     loadUsersData();
     
-    // Load packages data
-    loadPackagesData();
-    
     // Load transactions data
     loadTransactionsData();
     
@@ -89,6 +90,9 @@ function loadSystemSettings() {
             systemSettings = snapshot.val();
             updateSettingsForm();
             updateStats();
+        } else {
+            // Set default settings if none exist
+            set(ref(database, 'system/settings'), systemSettings);
         }
     });
 }
@@ -98,20 +102,8 @@ function loadUsersData() {
     
     onValue(usersRef, (snapshot) => {
         if (snapshot.exists()) {
-            usersData = Object.values(snapshot.val());
+            usersData = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
             updateUsersTable();
-            updateStats();
-        }
-    });
-}
-
-function loadPackagesData() {
-    const packagesRef = ref(database, 'packages');
-    
-    onValue(packagesRef, (snapshot) => {
-        if (snapshot.exists()) {
-            packagesData = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
-            updatePackagesTable();
             updateStats();
         }
     });
@@ -163,15 +155,35 @@ function loadPendingWithdrawals() {
 
 function updateStats() {
     document.getElementById('totalUsers').textContent = usersData.length;
-    document.getElementById('activePackages').textContent = packagesData.filter(pkg => pkg.status === 'active').length;
-    document.getElementById('totalTransactions').textContent = transactionsData.length;
+    
+    // Calculate total deposits and withdrawals
+    const totalDeposits = transactionsData
+        .filter(tx => tx.type === 'deposit' && tx.status === 'completed')
+        .reduce((sum, tx) => sum + (tx.amount || 0), 0);
+        
+    const totalWithdrawals = transactionsData
+        .filter(tx => tx.type === 'withdrawal' && tx.status === 'completed')
+        .reduce((sum, tx) => sum + (tx.amount || 0), 0);
+        
+    const totalAdminProfit = transactionsData
+        .filter(tx => tx.type === 'admin_profit')
+        .reduce((sum, tx) => sum + (tx.amount || 0), 0);
+        
+    const totalUserProfit = transactionsData
+        .filter(tx => tx.type === 'user_profit')
+        .reduce((sum, tx) => sum + (tx.amount || 0), 0);
+
+    document.getElementById('totalDeposits').textContent = '$' + totalDeposits.toFixed(2);
+    document.getElementById('totalWithdrawals').textContent = '$' + totalWithdrawals.toFixed(2);
+    document.getElementById('adminProfit').textContent = '$' + totalAdminProfit.toFixed(2);
+    document.getElementById('userProfit').textContent = '$' + totalUserProfit.toFixed(2);
     document.getElementById('pendingActions').textContent = pendingDeposits.length + pendingWithdrawals.length;
 }
 
 function updateSettingsForm() {
     document.getElementById('adminCommission').value = (systemSettings.adminCommission * 100) || 60;
     document.getElementById('directCommission').value = (systemSettings.directCommission * 100) || 10;
-    document.getElementById('profitPercentage').value = (systemSettings.profitPercentage * 100) || 5;
+    document.getElementById('profitPercentage').value = (systemSettings.profitPercentage * 100) || 20;
     
     const levelInputs = document.querySelectorAll('.level-input');
     levelInputs.forEach(input => {
@@ -185,40 +197,22 @@ function updateUsersTable() {
     tableBody.innerHTML = '';
     
     usersData.forEach(user => {
+        // Calculate user's total investments
+        const userInvestments = transactionsData
+            .filter(tx => tx.userId === user.id && tx.type === 'investment')
+            .reduce((sum, tx) => sum + (tx.amount || 0), 0);
+        
         const row = document.createElement('tr');
         
         row.innerHTML = `
-            <td>${user.uid.substring(0, 8)}...</td>
+            <td>${user.id.substring(0, 8)}...</td>
             <td>${user.name || 'N/A'}</td>
             <td>${user.email || 'N/A'}</td>
             <td>$${(user.balance || 0).toFixed(2)}</td>
+            <td>$${userInvestments.toFixed(2)}</td>
             <td><span class="badge status-active">Active</span></td>
             <td>
-                <button class="btn btn-small" data-action="edit" data-user="${user.uid}">Edit</button>
-                <button class="btn btn-small btn-danger" data-action="delete" data-user="${user.uid}">Delete</button>
-            </td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
-}
-
-function updatePackagesTable() {
-    const tableBody = document.getElementById('packagesTableBody');
-    tableBody.innerHTML = '';
-    
-    packagesData.forEach(pkg => {
-        const row = document.createElement('tr');
-        
-        row.innerHTML = `
-            <td>${pkg.id.substring(0, 8)}...</td>
-            <td>${pkg.name}</td>
-            <td>$${pkg.amount}</td>
-            <td>${pkg.return}%</td>
-            <td><span class="badge status-${pkg.status || 'active'}">${pkg.status || 'Active'}</span></td>
-            <td>
-                <button class="btn btn-small" data-action="edit-pkg" data-pkg="${pkg.id}">Edit</button>
-                <button class="btn btn-small btn-danger" data-action="delete-pkg" data-pkg="${pkg.id}">Delete</button>
+                <button class="btn btn-small btn-danger" data-action="delete" data-user="${user.id}">Delete</button>
             </td>
         `;
         
@@ -295,38 +289,6 @@ function setupEventListeners() {
         });
     });
     
-    // Add new package
-    document.getElementById('addPackageBtn').addEventListener('click', () => {
-        const name = document.getElementById('packageName').value.trim();
-        const amount = parseFloat(document.getElementById('packageAmount').value);
-        const returnPercent = parseFloat(document.getElementById('packageReturn').value);
-        
-        if (!name || !amount || !returnPercent) {
-            showToast('Please fill all package details', 'error');
-            return;
-        }
-        
-        const packageData = {
-            name,
-            amount,
-            return: returnPercent,
-            status: 'active',
-            createdAt: Date.now()
-        };
-        
-        const newPackageRef = push(ref(database, 'packages'));
-        set(newPackageRef, packageData)
-            .then(() => {
-                showToast('Package added successfully', 'success');
-                document.getElementById('packageName').value = '';
-                document.getElementById('packageAmount').value = '';
-                document.getElementById('packageReturn').value = '';
-            })
-            .catch(error => {
-                showToast('Failed to add package: ' + error.message, 'error');
-            });
-    });
-    
     // Save settings
     document.getElementById('saveSettingsBtn').addEventListener('click', () => {
         const adminCommission = parseFloat(document.getElementById('adminCommission').value) / 100;
@@ -362,10 +324,7 @@ function setupEventListeners() {
         const action = btn.dataset.action;
         const userId = btn.dataset.user;
         
-        if (action === 'edit') {
-            // Edit user functionality
-            showToast('Edit user: ' + userId, 'warning');
-        } else if (action === 'delete') {
+        if (action === 'delete') {
             if (confirm('Are you sure you want to delete this user?')) {
                 remove(ref(database, `users/${userId}`))
                     .then(() => {
@@ -373,30 +332,6 @@ function setupEventListeners() {
                     })
                     .catch(error => {
                         showToast('Failed to delete user: ' + error.message, 'error');
-                    });
-            }
-        }
-    });
-    
-    // Packages table actions
-    document.getElementById('packagesTableBody').addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        
-        const action = btn.dataset.action;
-        const pkgId = btn.dataset.pkg;
-        
-        if (action === 'edit-pkg') {
-            // Edit package functionality
-            showToast('Edit package: ' + pkgId, 'warning');
-        } else if (action === 'delete-pkg') {
-            if (confirm('Are you sure you want to delete this package?')) {
-                remove(ref(database, `packages/${pkgId}`))
-                    .then(() => {
-                        showToast('Package deleted successfully', 'success');
-                    })
-                    .catch(error => {
-                        showToast('Failed to delete package: ' + error.message, 'error');
                     });
             }
         }
