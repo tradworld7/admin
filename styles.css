@@ -5,6 +5,7 @@
     --success-color: #4cc9f0;
     --danger-color: #f72585;
     --warning-color: #f8961e;
+    --info-color: #4895ef;
     --light-color: #f8f9fa;
     --dark-color: #212529;
     --gray-color: #6c757d;
@@ -183,6 +184,11 @@ body {
     color: var(--warning-color);
 }
 
+.stat-icon.pending-actions {
+    background-color: rgba(72, 149, 239, 0.1);
+    color: var(--info-color);
+}
+
 .stat-info h3 {
     font-size: 1rem;
     font-weight: 500;
@@ -303,6 +309,29 @@ body {
     background-color: var(--secondary-color);
 }
 
+.btn-success {
+    background-color: var(--success-color);
+    color: var(--white-color);
+}
+
+.btn-success:hover {
+    background-color: #3aa8d8;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: var(--white-color);
+}
+
+.btn-danger:hover {
+    background-color: #d3166b;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
 /* Status Badges */
 .badge {
     display: inline-block;
@@ -325,6 +354,16 @@ body {
 .status-inactive {
     background-color: rgba(247, 37, 133, 0.1);
     color: var(--danger-color);
+}
+
+.status-completed {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+}
+
+.status-rejected {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: var(--gray-color);
 }
 
 /* Toast Notifications */
@@ -361,6 +400,10 @@ body {
 
 .toast.warning {
     background-color: var(--warning-color);
+}
+
+.toast.info {
+    background-color: var(--info-color);
 }
 
 .toast-close {
@@ -421,5 +464,15 @@ body {
     
     .admin-section h2 {
         font-size: 1.3rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .toast {
+        min-width: 250px;
+        padding: 0.75rem 1rem;
     }
 }
