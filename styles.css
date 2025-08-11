@@ -174,19 +174,29 @@ body {
     color: var(--primary-color);
 }
 
-.stat-icon.active-packages {
+.stat-icon.total-deposits {
     background-color: rgba(76, 201, 240, 0.1);
     color: var(--success-color);
 }
 
-.stat-icon.total-transactions {
+.stat-icon.total-withdrawals {
     background-color: rgba(248, 150, 30, 0.1);
     color: var(--warning-color);
 }
 
-.stat-icon.pending-actions {
+.stat-icon.admin-profit {
     background-color: rgba(72, 149, 239, 0.1);
     color: var(--info-color);
+}
+
+.stat-icon.user-profit {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+}
+
+.stat-icon.pending-actions {
+    background-color: rgba(247, 37, 133, 0.1);
+    color: var(--danger-color);
 }
 
 .stat-info h3 {
