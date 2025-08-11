@@ -25,7 +25,6 @@
         <ul class="admin-menu">
             <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
             <li><a href="#" data-section="users"><i class="fas fa-users"></i> Users</a></li>
-            <li><a href="#" data-section="packages"><i class="fas fa-box-open"></i> Packages</a></li>
             <li><a href="#" data-section="transactions"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
             <li><a href="#" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
         </ul>
@@ -47,21 +46,39 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon active-packages">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Active Packages</h3>
-                        <p id="activePackages">0</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon total-transactions">
+                    <div class="stat-icon total-deposits">
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
                     <div class="stat-info">
-                        <h3>Total Transactions</h3>
-                        <p id="totalTransactions">0</p>
+                        <h3>Total Deposits</h3>
+                        <p id="totalDeposits">$0.00</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon total-withdrawals">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Withdrawals</h3>
+                        <p id="totalWithdrawals">$0.00</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon admin-profit">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Admin Profit</h3>
+                        <p id="adminProfit">$0.00</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon user-profit">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>User Profit</h3>
+                        <p id="userProfit">$0.00</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -87,51 +104,13 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Balance</th>
+                            <th>Investments</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="usersTableBody">
                         <!-- Users will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Packages Section -->
-        <section id="packages-section" class="admin-section">
-            <h2><i class="fas fa-box-open"></i> Package Management</h2>
-            <div class="admin-form">
-                <h3>Add New Package</h3>
-                <div class="form-group">
-                    <label for="packageName">Package Name</label>
-                    <input type="text" id="packageName" placeholder="Starter Package">
-                </div>
-                <div class="form-group">
-                    <label for="packageAmount">Amount ($)</label>
-                    <input type="number" id="packageAmount" placeholder="10">
-                </div>
-                <div class="form-group">
-                    <label for="packageReturn">Return Percentage</label>
-                    <input type="number" id="packageReturn" placeholder="100">
-                </div>
-                <button id="addPackageBtn" class="btn btn-primary">Add Package</button>
-            </div>
-            
-            <div class="admin-table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Package ID</th>
-                            <th>Name</th>
-                            <th>Amount</th>
-                            <th>Return</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="packagesTableBody">
-                        <!-- Packages will be loaded here -->
                     </tbody>
                 </table>
             </div>
@@ -175,7 +154,7 @@
                 </div>
                 <div class="form-group">
                     <label for="profitPercentage">Daily Profit Percentage (%)</label>
-                    <input type="number" id="profitPercentage" placeholder="5" step="0.01">
+                    <input type="number" id="profitPercentage" placeholder="20" step="0.01">
                 </div>
                 <div class="form-group">
                     <label>Level Commissions (%)</label>
