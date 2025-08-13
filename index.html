@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Copy all CSS from index.html */
         :root {
             --primary-color: #4361ee;
             --primary-light: #e6e9ff;
@@ -192,53 +193,103 @@
             border-radius: 3px;
         }
 
-        /* Financial Summary */
-        .financial-summary {
+        /* Dashboard Cards */
+        .dashboard-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .financial-card {
+        .card {
             background-color: var(--white-color);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            padding: 1.5rem;
+            overflow: hidden;
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-color);
         }
 
-        .financial-header {
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card.users {
+            border-top-color: var(--info-color);
+        }
+
+        .card.deposits {
+            border-top-color: var(--success-color);
+        }
+
+        .card.withdrawals {
+            border-top-color: var(--warning-color);
+        }
+
+        .card.profit {
+            border-top-color: var(--danger-color);
+        }
+
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
+            padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--gray-light);
         }
 
-        .financial-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--dark-color);
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--gray-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .financial-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
         }
 
-        .financial-profit {
+        .card-icon.users {
+            background-color: rgba(72, 149, 239, 0.1);
+            color: var(--info-color);
+        }
+
+        .card-icon.deposits {
+            background-color: rgba(76, 201, 240, 0.1);
             color: var(--success-color);
         }
 
-        .financial-loss {
+        .card-icon.withdrawals {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+
+        .card-icon.profit {
+            background-color: rgba(247, 37, 133, 0.1);
             color: var(--danger-color);
         }
 
-        .financial-details {
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            color: var(--dark-color);
+        }
+
+        .card-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-light);
             font-size: 0.9rem;
             color: var(--gray-color);
+            background-color: rgba(0, 0, 0, 0.02);
         }
 
         /* Table Styles */
@@ -348,34 +399,6 @@
             background-color: #e01175;
         }
 
-        /* Stats Cards */
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background-color: var(--white-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--gray-color);
-        }
-
         /* Tabs */
         .tabs {
             display: flex;
@@ -402,58 +425,6 @@
 
         .tab-content.active {
             display: block;
-        }
-
-        /* Settings Panel */
-        .settings-panel {
-            background-color: var(--white-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            display: none;
-        }
-
-        .settings-panel.active {
-            display: block;
-        }
-
-        .settings-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .settings-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .settings-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--dark-color);
-        }
-
-        .settings-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-light);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .settings-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-
-        .settings-hint {
-            font-size: 0.8rem;
-            color: var(--gray-color);
-            margin-top: 0.5rem;
         }
 
         /* Toast Notifications Container */
@@ -553,8 +524,7 @@
         }
 
         @media (max-width: 768px) {
-            .stats-cards,
-            .financial-summary {
+            .dashboard-cards {
                 grid-template-columns: 1fr 1fr;
             }
             
@@ -576,8 +546,7 @@
                 font-size: 1.3rem;
             }
 
-            .stats-cards,
-            .financial-summary {
+            .dashboard-cards {
                 grid-template-columns: 1fr;
             }
 
@@ -585,58 +554,6 @@
                 overflow-x: auto;
                 white-space: nowrap;
             }
-        }
-
-        /* Additional styles for dashboard visibility */
-        .dashboard-section {
-            display: block;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        /* New styles for daily stats */
-        .daily-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .daily-stat-card {
-            background-color: var(--white-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 1.5rem;
-        }
-        
-        .daily-stat-header {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-        
-        .daily-stat-icon {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
-        
-        .daily-stat-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        
-        .daily-stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .daily-stat-details {
-            font-size: 0.9rem;
-            color: var(--gray-color);
         }
     </style>
 </head>
@@ -666,7 +583,6 @@
             <li><a href="#withdrawals"><i class="fas fa-wallet"></i> Withdrawal Requests</a></li>
             <li><a href="#users"><i class="fas fa-users"></i> All Users</a></li>
             <li><a href="#financial"><i class="fas fa-chart-pie"></i> Financial Summary</a></li>
-            <li><a href="#settings"><i class="fas fa-cog"></i> Settings</a></li>
         </ul>
     </aside>
 
@@ -674,102 +590,57 @@
     <main class="main-content" id="mainContent">
         <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
         
-        <!-- Stats Cards -->
-        <div class="stats-cards dashboard-section">
-            <div class="stat-card">
-                <div class="stat-value" id="totalUsers">0</div>
-                <div class="stat-label">Total Users</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value" id="pendingDeposits">0</div>
-                <div class="stat-label">Pending Deposits</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value" id="pendingWithdrawals">0</div>
-                <div class="stat-label">Pending Withdrawals</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-value" id="todayTransactions">0</div>
-                <div class="stat-label">Today's Transactions</div>
-            </div>
-        </div>
-        
-        <!-- Daily Stats Section -->
-        <div class="dashboard-section">
-            <h2 class="section-title">Today's Statistics</h2>
-            
-            <div class="daily-stats">
-                <div class="daily-stat-card">
-                    <div class="daily-stat-header">
-                        <i class="fas fa-money-bill-wave daily-stat-icon"></i>
-                        <div class="daily-stat-title">Today's Deposits</div>
+        <!-- Dashboard Cards -->
+        <div class="dashboard-cards">
+            <div class="card users">
+                <div class="card-header">
+                    <span class="card-title">Total Users</span>
+                    <div class="card-icon users">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="daily-stat-value" id="todayDeposits">$0.00</div>
-                    <div class="daily-stat-details">Total deposits made today</div>
                 </div>
-                
-                <div class="daily-stat-card">
-                    <div class="daily-stat-header">
-                        <i class="fas fa-wallet daily-stat-icon"></i>
-                        <div class="daily-stat-title">Today's Withdrawals</div>
-                    </div>
-                    <div class="daily-stat-value" id="todayWithdrawals">$0.00</div>
-                    <div class="daily-stat-details">Total withdrawals made today</div>
-                </div>
-                
-                <div class="daily-stat-card">
-                    <div class="daily-stat-header">
-                        <i class="fas fa-exchange-alt daily-stat-icon"></i>
-                        <div class="daily-stat-title">Today's Packages</div>
-                    </div>
-                    <div class="daily-stat-value" id="todayPackages">0</div>
-                    <div class="daily-stat-details">New packages purchased today</div>
-                </div>
-                
-                <div class="daily-stat-card">
-                    <div class="daily-stat-header">
-                        <i class="fas fa-chart-line daily-stat-icon"></i>
-                        <div class="daily-stat-title">Today's Profit</div>
-                    </div>
-                    <div class="daily-stat-value" id="todayProfit">$0.00</div>
-                    <div class="daily-stat-details">Net profit generated today</div>
+                <div class="card-value" id="totalUsers">0</div>
+                <div class="card-footer">
+                    <i class="fas fa-info-circle"></i> Total registered users
                 </div>
             </div>
-        </div>
-        
-        <!-- Financial Summary Section -->
-        <div class="dashboard-section">
-            <h2 class="section-title" id="financial">Financial Summary</h2>
             
-            <div class="financial-summary">
-                <div class="financial-card">
-                    <div class="financial-header">
-                        <div class="financial-title">Total Deposits</div>
-                        <i class="fas fa-money-bill-wave" style="color: var(--success-color);"></i>
+            <div class="card deposits">
+                <div class="card-header">
+                    <span class="card-title">Pending Deposits</span>
+                    <div class="card-icon deposits">
+                        <i class="fas fa-money-bill-wave"></i>
                     </div>
-                    <div class="financial-value" id="systemTotalDeposits">$0.00</div>
-                    <div class="financial-details">All time deposits across the system</div>
                 </div>
-                
-                <div class="financial-card">
-                    <div class="financial-header">
-                        <div class="financial-title">Total Withdrawals</div>
-                        <i class="fas fa-wallet" style="color: var(--danger-color);"></i>
-                    </div>
-                    <div class="financial-value" id="systemTotalWithdrawals">$0.00</div>
-                    <div class="financial-details">All time withdrawals across the system</div>
+                <div class="card-value" id="pendingDeposits">0</div>
+                <div class="card-footer">
+                    <i class="fas fa-info-circle"></i> Deposits awaiting approval
                 </div>
-                
-                <div class="financial-card">
-                    <div class="financial-header">
-                        <div class="financial-title">System Profit</div>
-                        <i class="fas fa-chart-line" style="color: var(--primary-color);"></i>
+            </div>
+            
+            <div class="card withdrawals">
+                <div class="card-header">
+                    <span class="card-title">Pending Withdrawals</span>
+                    <div class="card-icon withdrawals">
+                        <i class="fas fa-wallet"></i>
                     </div>
-                    <div class="financial-value" id="systemProfit">$0.00</div>
-                    <div class="financial-details">Net profit after all distributions</div>
+                </div>
+                <div class="card-value" id="pendingWithdrawals">0</div>
+                <div class="card-footer">
+                    <i class="fas fa-info-circle"></i> Withdrawals awaiting approval
+                </div>
+            </div>
+            
+            <div class="card profit">
+                <div class="card-header">
+                    <span class="card-title">System Profit</span>
+                    <div class="card-icon profit">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="systemProfit">$0.00</div>
+                <div class="card-footer">
+                    <i class="fas fa-info-circle"></i> Net profit after distributions
                 </div>
             </div>
         </div>
@@ -947,7 +818,6 @@
                             <th>User ID</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Mobile</th>
                             <th>Balance</th>
                             <th>Referral Earnings</th>
                             <th>Trading Profit</th>
@@ -959,80 +829,53 @@
                     </thead>
                     <tbody id="allUsers">
                         <tr>
-                            <td colspan="11" class="text-center">Loading users...</td>
+                            <td colspan="10" class="text-center">Loading users...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
         
-        <!-- Settings Panel -->
-        <div class="settings-panel" id="settingsPanel">
-            <h2 class="section-title" id="settings">System Settings</h2>
+        <!-- Financial Summary Section -->
+        <div class="dashboard-section" style="display:none;">
+            <h2 class="section-title" id="financial">Financial Summary</h2>
             
-            <form id="settingsForm">
-                <div class="settings-form">
-                    <div class="settings-group">
-                        <h3 class="financial-title">Commission Settings</h3>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Admin Commission (%)</label>
-                            <input type="number" class="settings-input" id="adminCommission" min="0" max="100" step="0.1" required>
-                            <div class="settings-hint">Percentage of each deposit that goes to admin</div>
-                        </div>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Direct Referral Commission (%)</label>
-                            <input type="number" class="settings-input" id="directCommission" min="0" max="100" step="0.1" required>
-                            <div class="settings-hint">Percentage for direct referrals</div>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <h3 class="financial-title">Level Commissions</h3>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Level 1 Commission (%)</label>
-                            <input type="number" class="settings-input" id="level1Commission" min="0" max="100" step="0.1" required>
-                        </div>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Level 2 Commission (%)</label>
-                            <input type="number" class="settings-input" id="level2Commission" min="0" max="100" step="0.1" required>
-                        </div>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Level 3 Commission (%)</label>
-                            <input type="number" class="settings-input" id="level3Commission" min="0" max="100" step="0.1" required>
-                        </div>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Level 4 Commission (%)</label>
-                            <input type="number" class="settings-input" id="level4Commission" min="0" max="100" step="0.1" required>
-                        </div>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Level 5 Commission (%)</label>
-                            <input type="number" class="settings-input" id="level5Commission" min="0" max="100" step="0.1" required>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <h3 class="financial-title">Profit Distribution</h3>
-                        
-                        <div class="settings-group">
-                            <label class="settings-label">Trading Profit Pool (%)</label>
-                            <input type="number" class="settings-input" id="tradingProfitPool" min="0" max="100" step="0.1" required>
-                            <div class="settings-hint">Percentage of deposits distributed to active traders</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" id="saveSettingsBtn">
-                    <span id="saveSettingsBtnText">Save Settings</span>
-                    <span id="saveSettingsSpinner" class="spinner" style="display: none;"></span>
-                </button>
-            </form>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Today</th>
+                            <th>This Week</th>
+                            <th>This Month</th>
+                            <th>All Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Deposits</td>
+                            <td id="todayDeposits">$0.00</td>
+                            <td id="weekDeposits">$0.00</td>
+                            <td id="monthDeposits">$0.00</td>
+                            <td id="totalDeposits">$0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Total Withdrawals</td>
+                            <td id="todayWithdrawals">$0.00</td>
+                            <td id="weekWithdrawals">$0.00</td>
+                            <td id="monthWithdrawals">$0.00</td>
+                            <td id="totalWithdrawals">$0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Net Profit</td>
+                            <td id="todayProfit">$0.00</td>
+                            <td id="weekProfit">$0.00</td>
+                            <td id="monthProfit">$0.00</td>
+                            <td id="totalProfit">$0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
@@ -1052,14 +895,14 @@
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
-             apiKey: "AIzaSyCzHmIimieea8H9KzYFDSqD0lGOCZjxHYw",
-  authDomain: "myapp-ee226.firebaseapp.com",
-  databaseURL: "https://myapp-ee226-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "myapp-ee226",
-  storageBucket: "myapp-ee226.firebasestorage.app",
-  messagingSenderId: "272405753135",
-  appId: "1:272405753135:web:598ec27c28bcf6b04105da",
-  measurementId: "G-D5KYTMJ5WK"
+            apiKey: "AIzaSyBshAGZScyo7PJegLHMzORbkkrCLGD6U5s",
+            authDomain: "mywebsite-600d3.firebaseapp.com",
+            databaseURL: "https://mywebsite-600d3-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mywebsite-600d3",
+            storageBucket: "mywebsite-600d3.appspot.com",
+            messagingSenderId: "584485288598",
+            appId: "1:584485288598:web:01856eaa18ba5ada49e0b7",
+            measurementId: "G-GQ9J9QH42J"
         };
 
         // Initialize Firebase
@@ -1126,6 +969,24 @@
                    date.getFullYear() === today.getFullYear();
         }
 
+        // Check if date is this week
+        function isThisWeek(timestamp) {
+            if (!timestamp) return false;
+            const date = new Date(timestamp);
+            const today = new Date();
+            const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+            return date >= firstDayOfWeek;
+        }
+
+        // Check if date is this month
+        function isThisMonth(timestamp) {
+            if (!timestamp) return false;
+            const date = new Date(timestamp);
+            const today = new Date();
+            return date.getMonth() === today.getMonth() && 
+                   date.getFullYear() === today.getFullYear();
+        }
+
         // Initialize tabs
         function initTabs() {
             const tabs = document.querySelectorAll('.tab');
@@ -1151,7 +1012,8 @@
                 const depositsSnapshot = await get(ref(database, 'deposits'));
                 let totalDeposits = 0;
                 let todayDeposits = 0;
-                let todayPackages = 0;
+                let weekDeposits = 0;
+                let monthDeposits = 0;
                 
                 if (depositsSnapshot.exists()) {
                     const deposits = depositsSnapshot.val();
@@ -1160,7 +1022,12 @@
                             totalDeposits += deposit.amount || 0;
                             if (isToday(deposit.timestamp)) {
                                 todayDeposits += deposit.amount || 0;
-                                todayPackages++;
+                            }
+                            if (isThisWeek(deposit.timestamp)) {
+                                weekDeposits += deposit.amount || 0;
+                            }
+                            if (isThisMonth(deposit.timestamp)) {
+                                monthDeposits += deposit.amount || 0;
                             }
                         }
                     });
@@ -1170,6 +1037,8 @@
                 const withdrawalsSnapshot = await get(ref(database, 'withdrawals'));
                 let totalWithdrawals = 0;
                 let todayWithdrawals = 0;
+                let weekWithdrawals = 0;
+                let monthWithdrawals = 0;
                 
                 if (withdrawalsSnapshot.exists()) {
                     const withdrawals = withdrawalsSnapshot.val();
@@ -1179,106 +1048,45 @@
                             if (isToday(withdrawal.timestamp)) {
                                 todayWithdrawals += withdrawal.amount || 0;
                             }
+                            if (isThisWeek(withdrawal.timestamp)) {
+                                weekWithdrawals += withdrawal.amount || 0;
+                            }
+                            if (isThisMonth(withdrawal.timestamp)) {
+                                monthWithdrawals += withdrawal.amount || 0;
+                            }
                         }
                     });
                 }
                 
                 // Calculate profit
-                const profit = calculateProfit(totalDeposits, totalWithdrawals);
+                const totalProfit = calculateProfit(totalDeposits, totalWithdrawals);
                 const todayProfit = calculateProfit(todayDeposits, todayWithdrawals);
+                const weekProfit = calculateProfit(weekDeposits, weekWithdrawals);
+                const monthProfit = calculateProfit(monthDeposits, monthWithdrawals);
                 
                 // Update UI
-                document.getElementById('systemTotalDeposits').textContent = formatCurrency(totalDeposits);
-                document.getElementById('systemTotalWithdrawals').textContent = formatCurrency(totalWithdrawals);
-                document.getElementById('systemProfit').textContent = formatCurrency(profit);
+                document.getElementById('totalDeposits').textContent = formatCurrency(totalDeposits);
+                document.getElementById('totalWithdrawals').textContent = formatCurrency(totalWithdrawals);
+                document.getElementById('totalProfit').textContent = formatCurrency(totalProfit);
                 
-                // Update today's stats
                 document.getElementById('todayDeposits').textContent = formatCurrency(todayDeposits);
                 document.getElementById('todayWithdrawals').textContent = formatCurrency(todayWithdrawals);
-                document.getElementById('todayPackages').textContent = todayPackages;
                 document.getElementById('todayProfit').textContent = formatCurrency(todayProfit);
                 
-                // Add profit class based on value
-                const profitElement = document.getElementById('systemProfit');
-                profitElement.classList.remove('financial-profit', 'financial-loss');
+                document.getElementById('weekDeposits').textContent = formatCurrency(weekDeposits);
+                document.getElementById('weekWithdrawals').textContent = formatCurrency(weekWithdrawals);
+                document.getElementById('weekProfit').textContent = formatCurrency(weekProfit);
                 
-                if (profit >= 0) {
-                    profitElement.classList.add('financial-profit');
-                } else {
-                    profitElement.classList.add('financial-loss');
-                }
+                document.getElementById('monthDeposits').textContent = formatCurrency(monthDeposits);
+                document.getElementById('monthWithdrawals').textContent = formatCurrency(monthWithdrawals);
+                document.getElementById('monthProfit').textContent = formatCurrency(monthProfit);
+                
+                // Update dashboard cards
+                document.getElementById('systemProfit').textContent = formatCurrency(totalProfit);
                 
             } catch (error) {
                 console.error("Error loading financial summary:", error);
                 showToast('Error loading financial data', 'error');
-            }
-        }
-
-        // Load system settings
-        async function loadSystemSettings() {
-            try {
-                const settingsSnapshot = await get(ref(database, 'system/settings'));
-                
-                if (settingsSnapshot.exists()) {
-                    const settings = settingsSnapshot.val();
-                    
-                    // Update form fields
-                    document.getElementById('adminCommission').value = settings.adminCommission || 0;
-                    document.getElementById('directCommission').value = settings.directCommission || 0;
-                    document.getElementById('level1Commission').value = settings.levelCommissions?.level1 || 0;
-                    document.getElementById('level2Commission').value = settings.levelCommissions?.level2 || 0;
-                    document.getElementById('level3Commission').value = settings.levelCommissions?.level3 || 0;
-                    document.getElementById('level4Commission').value = settings.levelCommissions?.level4 || 0;
-                    document.getElementById('level5Commission').value = settings.levelCommissions?.level5 || 0;
-                    document.getElementById('tradingProfitPool').value = settings.tradingProfitPool || 0;
-                }
-                
-            } catch (error) {
-                console.error("Error loading settings:", error);
-                showToast('Error loading system settings', 'error');
-            }
-        }
-
-        // Save system settings
-        async function saveSystemSettings(e) {
-            e.preventDefault();
-            
-            const btn = document.getElementById('saveSettingsBtn');
-            const btnText = document.getElementById('saveSettingsBtnText');
-            const spinner = document.getElementById('saveSettingsSpinner');
-            
-            btn.disabled = true;
-            btnText.textContent = 'Saving...';
-            spinner.style.display = 'inline-block';
-            
-            try {
-                const settings = {
-                    adminCommission: parseFloat(document.getElementById('adminCommission').value),
-                    directCommission: parseFloat(document.getElementById('directCommission').value),
-                    levelCommissions: {
-                        level1: parseFloat(document.getElementById('level1Commission').value),
-                        level2: parseFloat(document.getElementById('level2Commission').value),
-                        level3: parseFloat(document.getElementById('level3Commission').value),
-                        level4: parseFloat(document.getElementById('level4Commission').value),
-                        level5: parseFloat(document.getElementById('level5Commission').value)
-                    },
-                    tradingProfitPool: parseFloat(document.getElementById('tradingProfitPool').value),
-                    updatedAt: Date.now()
-                };
-                
-                await update(ref(database, 'system'), {
-                    settings: settings
-                });
-                
-                showToast('Settings saved successfully!', 'success');
-                
-            } catch (error) {
-                console.error("Error saving settings:", error);
-                showToast('Failed to save settings', 'error');
-            } finally {
-                btn.disabled = false;
-                btnText.textContent = 'Save Settings';
-                spinner.style.display = 'none';
             }
         }
 
@@ -1297,8 +1105,6 @@
                 rejectedTbody.innerHTML = '';
                 
                 let pendingCount = 0;
-                let todayCount = 0;
-                const today = new Date().toDateString();
                 
                 if (!deposits) {
                     pendingTbody.innerHTML = '<tr><td colspan="8" class="text-center">No deposit requests found</td></tr>';
@@ -1313,11 +1119,6 @@
                 
                 // Process all deposits
                 depositsArray.forEach(deposit => {
-                    const depositDate = new Date(deposit.timestamp).toDateString();
-                    if (depositDate === today) {
-                        todayCount++;
-                    }
-                    
                     const row = document.createElement('tr');
                     
                     if (deposit.status === 'pending') {
@@ -1367,7 +1168,6 @@
                 
                 // Update stats
                 document.getElementById('pendingDeposits').textContent = pendingCount;
-                document.getElementById('todayTransactions').textContent = todayCount;
                 
                 // Add event listeners to buttons
                 document.querySelectorAll('.approve-deposit-btn').forEach(btn => {
@@ -1711,7 +1511,7 @@
                 tbody.innerHTML = '';
                 
                 if (!users) {
-                    tbody.innerHTML = '<tr><td colspan="11" class="text-center">No users found</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="10" class="text-center">No users found</td></tr>';
                     document.getElementById('totalUsers').textContent = '0';
                     return;
                 }
@@ -1721,7 +1521,7 @@
                 
                 // Convert to array and sort by join date (newest first)
                 const usersArray = Object.entries(users).map(([id, user]) => ({ id, ...user }));
-                usersArray.sort((a, b) => b.joinDate - a.joinDate);
+                usersArray.sort((a, b) => b.createdAt - a.createdAt);
                 
                 usersArray.forEach(user => {
                     const row = document.createElement('tr');
@@ -1730,13 +1530,12 @@
                         <td>${user.id}</td>
                         <td>${user.name || 'N/A'}</td>
                         <td>${user.email || 'N/A'}</td>
-                        <td>${user.mobileNumber || 'N/A'}</td>
                         <td>${formatCurrency(user.balance)}</td>
                         <td>${formatCurrency(user.referralEarnings)}</td>
                         <td>${formatCurrency(user.tradingProfit)}</td>
                         <td>${formatCurrency(user.deposits)}</td>
                         <td>${formatCurrency(user.withdrawals)}</td>
-                        <td>${formatDate(user.joinDate)}</td>
+                        <td>${formatDate(user.createdAt)}</td>
                         <td><span class="badge ${user.accountStatus === 'active' ? 'status-completed' : 'status-rejected'}">${user.accountStatus || 'active'}</span></td>
                     `;
                     
@@ -1771,21 +1570,10 @@
                         section.style.display = 'none';
                     });
                     
-                    // Show settings panel if needed
-                    if (targetId === 'settings') {
-                        document.getElementById('settingsPanel').classList.add('active');
-                    } else {
-                        document.getElementById('settingsPanel').classList.remove('active');
-                    }
-                    
                     // Show target section
                     if (targetId === '') {
-                        // Show dashboard sections
-                        document.querySelectorAll('.dashboard-section').forEach((section, index) => {
-                            if (index < 3) { // Show stats, daily stats and financial summary by default
-                                section.style.display = 'block';
-                            }
-                        });
+                        // Show dashboard cards by default
+                        document.querySelector('.dashboard-cards').style.display = 'grid';
                     } else {
                         const targetElement = document.getElementById(targetId);
                         if (targetElement) {
@@ -1828,10 +1616,6 @@
             loadDepositRequests();
             loadWithdrawalRequests();
             loadAllUsers();
-            loadSystemSettings();
-            
-            // Setup settings form
-            document.getElementById('settingsForm').addEventListener('submit', saveSystemSettings);
             
             // Show dashboard by default
             document.querySelector('.sidebar-menu a.active').click();
