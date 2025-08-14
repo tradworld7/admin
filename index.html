@@ -1414,51 +1414,20 @@
         // Approve withdrawal
         async function approveWithdrawal(withdrawalId, userId, amount, type = 'balance') {
             try {
-                // 1. Get user data first
-                const userSnapshot = await get(ref(database, `users/${userId}`));
-                const user = userSnapshot.exists() ? userSnapshot.val() : {};
-                
-                // 2. Prepare updates object
+                // 1. Prepare updates object
                 const updates = {};
                 
-                // 3. Update withdrawal status to approved
+                // 2. Update withdrawal status to approved
                 updates[`withdrawals/${withdrawalId}/status`] = 'approved';
                 updates[`withdrawals/${withdrawalId}/approvedAt`] = Date.now();
                 
-                // 4. Handle different withdrawal types
-                if (type === 'referral') {
-                    // Deduct from referral earnings
-                    const currentReferralEarnings = user.referralEarnings || 0;
-                    if (currentReferralEarnings < amount) {
-                        showToast('Insufficient referral earnings for withdrawal', 'error');
-                        return false;
-                    }
-                    updates[`users/${userId}/referralEarnings`] = currentReferralEarnings - amount;
-                } 
-                else if (type === 'trading') {
-                    // Deduct from trading profits
-                    const currentTradingProfit = user.tradingProfit || 0;
-                    if (currentTradingProfit < amount) {
-                        showToast('Insufficient trading profits for withdrawal', 'error');
-                        return false;
-                    }
-                    updates[`users/${userId}/tradingProfit`] = currentTradingProfit - amount;
-                } 
-                else {
-                    // Default: deduct from main balance
-                    const currentBalance = user.balance || 0;
-                    if (currentBalance < amount) {
-                        showToast('Insufficient balance for withdrawal', 'error');
-                        return false;
-                    }
-                    updates[`users/${userId}/balance`] = currentBalance - amount;
-                }
-                
-                // 5. Add to user's withdrawals total
+                // 3. Add to user's withdrawals total (without deducting from balance)
+                const userSnapshot = await get(ref(database, `users/${userId}`));
+                const user = userSnapshot.exists() ? userSnapshot.val() : {};
                 const totalWithdrawals = user.withdrawals || 0;
                 updates[`users/${userId}/withdrawals`] = totalWithdrawals + amount;
                 
-                // 6. Add transaction record
+                // 4. Add transaction record
                 const transactionId = `withdrawal_${withdrawalId}`;
                 updates[`users/${userId}/transactions/${transactionId}`] = {
                     type: 'withdrawal',
